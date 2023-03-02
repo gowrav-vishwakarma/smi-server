@@ -140,7 +140,14 @@ export class QuestionsService {
       },
     });
 
+    const limit = 2;
     pipeline.push({ $unwind: '$byUser' });
+    pipeline.push({
+      $skip: (page - 1) * limit,
+    });
+    pipeline.push({
+      $limit: +limit,
+    });
 
     const questions = await this.questionModel.aggregate(pipeline);
 
