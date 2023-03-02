@@ -25,6 +25,8 @@ import { QuestionDocument } from '../schemas/question.schema';
 import { UserDocument } from '../schemas/user.schema';
 import { QuestionsService } from './questions.service';
 
+import { Express } from 'express';
+
 @Controller('questions')
 @ApiTags('Questions')
 export class QuestionsController {

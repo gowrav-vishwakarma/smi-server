@@ -184,7 +184,7 @@ export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   contactNo: string;
 
   @Prop({ required: false, unique: true })
