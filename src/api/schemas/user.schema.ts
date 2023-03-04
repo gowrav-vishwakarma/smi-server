@@ -230,7 +230,10 @@ export class User {
   avatar: string;
 
   @Prop({ required: false })
-  profileCoverImage: string;
+  profileImage: string;
+
+  @Prop({ required: false })
+  coverImage: string;
 
   @Prop({ required: false })
   topicsInterestedIn: string[];
