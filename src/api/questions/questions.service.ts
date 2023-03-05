@@ -356,6 +356,7 @@ export class QuestionsService {
               : -1,
           },
         },
+        { returnOriginal: false },
       );
     }
     if (voteDto.vote === 'down' && updateCount) {
