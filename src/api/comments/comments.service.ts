@@ -59,7 +59,7 @@ export class CommentsService {
             'commentValue.totalVoteCount': 1,
             'commentValue.totalVoteDownCount': updateDetails.upsertedCount
               ? 0
-              : 1,
+              : -1,
           },
         },
       );
@@ -69,7 +69,7 @@ export class CommentsService {
         { _id: voteDto.commentId },
         {
           $inc: {
-            'commentValue.totalVoteDownCount': -1,
+            'commentValue.totalVoteDownCount': 1,
             'commentValue.totalVoteCount': updateDetails.upsertedCount ? 0 : -1,
           },
         },
