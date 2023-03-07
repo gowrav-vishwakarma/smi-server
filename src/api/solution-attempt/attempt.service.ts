@@ -21,12 +21,18 @@ export class SolutionAttemptService {
   async createAttempt(
     solutionAttemp: CreateSolutionAttemptDTO,
   ): Promise<SolutionAttemptedDocument> {
+    console.log(solutionAttemp);
     await this.solutionAttemptedModel.updateOne(
       {
         questionId: solutionAttemp.questionId,
         offererId: solutionAttemp.offererId,
+        questionerId: solutionAttemp.questionerId,
       },
-      {},
+      {
+        questioner: solutionAttemp.questioner,
+        offerer: solutionAttemp.offerer,
+        notes: solutionAttemp.notes,
+      },
       { upsert: true },
     );
 
