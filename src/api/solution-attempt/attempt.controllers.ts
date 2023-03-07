@@ -33,7 +33,8 @@ export class SolutionAttemptController {
   @UseGuards(AuthGuard())
   async createAttempt(
     @GetUser() user: UserDocument,
-    @Body() solutionAttemp: CreateSolutionAttemptDTO,
+    @Body() solutionAttemp: any,
+    // @Body() solutionAttemp: CreateSolutionAttemptDTO,
   ): Promise<SolutionAttemptedDocument> {
     return await this.solutionAttemptService.createAttempt(solutionAttemp);
   }
@@ -45,6 +46,7 @@ export class SolutionAttemptController {
   async createRating(
     @GetUser() user: UserDocument,
     @Body() Rating: CreateSolutionRatingDTO,
+    // @Body() Rating: CreateSolutionRatingDTO,
   ): Promise<SolutionAttemptedDocument> {
     // Promise<SolutionAttemptedDocument> {
     return await this.solutionAttemptService.creatingRating(Rating);
