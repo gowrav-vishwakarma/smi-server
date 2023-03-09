@@ -45,10 +45,19 @@ export class SolutionAttemptController {
   @UseGuards(AuthGuard())
   async createRating(
     @GetUser() user: UserDocument,
-    @Body() Rating: CreateSolutionRatingDTO,
+    @Body() Rating: any,
     // @Body() Rating: CreateSolutionRatingDTO,
   ): Promise<SolutionAttemptedDocument> {
     // Promise<SolutionAttemptedDocument> {
-    return await this.solutionAttemptService.creatingRating(Rating);
+
+    return await this.solutionAttemptService.createRating(Rating);
+  }
+
+  @Get(':id')
+  @UsePipes(ValidationPipe)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  solutionAttempt(@Param('id') id: string) {
+    return this.solutionAttemptService.detail(id);
   }
 }

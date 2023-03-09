@@ -40,6 +40,32 @@ export class SolutionAttempted {
     type: String,
   })
   status: string;
+
+  @Prop({ required: false, default: Date.now() })
+  solutionMeetingStardAt: Date;
+
+  @Prop({ required: false, default: Date.now() })
+  solutionMeetingFinishedAt: Date;
+
+  @Prop({
+    required: true,
+    default: 0,
+    type: Number,
+  })
+  ratingForSolver: number;
+
+  @Prop({ required: false })
+  ratingCommentForSolver: string;
+
+  @Prop({
+    required: true,
+    default: 0,
+    type: Number,
+  })
+  ratingForQuestioner: number;
+
+  @Prop({ required: false })
+  ratingCommentForQuestioner: string;
 }
 
 export const SolutionAttemptedSchema =

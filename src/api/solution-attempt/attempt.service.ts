@@ -44,11 +44,41 @@ export class SolutionAttemptService {
     return newAttempt;
   }
 
-  async creatingRating(
-    ratingParams: CreateSolutionRatingDTO,
-  ): Promise<SolutionAttemptedDocument> {
-    return await this.solutionAttemptedModel.findById(
-      ratingParams.solutionAttemptId,
-    );
+  async createRating(ratingParams: CreateSolutionRatingDTO): Promise<any> {
+    if (ratingParams.forOfferer && !ratingParams.forQuestioner) {
+      return await this.solutionAttemptedModel.updateOne(
+        {
+          questionId: ratingParams.questionId,
+          offererId: ratingParams.offererId,
+          questionerId: ratingParams.questionerId,
+          _id: ratingParams.solutionAttemptId,
+        },
+        {
+          ratingForSolver: ratingParams.rating,
+          ratingCommentForSolver: ratingParams.comment,
+        },
+      );
+    } else {
+      return await this.solutionAttemptedModel.updateOne(
+        {
+          questionId: ratingParams.questionId,
+          offererId: ratingParams.offererId,
+          questionerId: ratingParams.questionerId,
+          _id: ratingParams.solutionAttemptId,
+        },
+        {
+          ratingForQuestioner: ratingParams.rating,
+          ratingCommentForQuestioner: ratingParams.comment,
+        },
+      );
+    }
+
+    // return await this.solutionAttemptedModel.findById(
+    //   ratingParams.solutionAttemptId,
+    // );
+  }
+
+  async detail(id: string): Promise<SolutionAttemptedDocument> {
+    return await this.solutionAttemptedModel.findById(id);
   }
 }
