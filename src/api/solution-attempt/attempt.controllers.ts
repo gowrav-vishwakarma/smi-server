@@ -54,15 +54,17 @@ export class SolutionAttemptController {
     // Promise<SolutionAttemptedDocument> {
 
     // todo send email
-    await this.mailerService.sendMail(
-      'rksinha.btech@gamil.com',
-      'Welcome Email',
-      'welcome-template.html',
-      {
-        title: 'hello',
-        message: 'This is a test email',
-      },
-    );
+    // const res = await this.mailerService.sendMail(
+    //   'rakesh.s@frendy.in',
+    //   'Welcome Email',
+    //   'welcome-template.html',
+    //   {
+    //     title: 'hello',
+    //     message: 'This is a test email',
+    //   },
+    // );
+
+    // console.log(res);
 
     return await this.solutionAttemptService.createRating(Rating);
   }

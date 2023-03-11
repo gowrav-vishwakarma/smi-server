@@ -28,4 +28,7 @@ export class CreateSolutionRatingDTO {
 
   @ApiProperty()
   forQuestioner: boolean;
+
+  @ApiProperty()
+  markedSolved: boolean;
 }

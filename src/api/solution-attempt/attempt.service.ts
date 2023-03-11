@@ -9,13 +9,15 @@ import {
   SolutionAttemptedDocument,
   SolutionAttemptedStatus,
 } from '../schemas/solutionattempted.schema';
-import { UserDocument } from '../schemas/user.schema';
+import { User, UserDocument } from '../schemas/user.schema';
 
 @Injectable()
 export class SolutionAttemptService {
   constructor(
     @InjectModel(SolutionAttempted.name)
     private readonly solutionAttemptedModel: Model<SolutionAttemptedDocument>,
+
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
   async createAttempt(
@@ -45,7 +47,21 @@ export class SolutionAttemptService {
   }
 
   async createRating(ratingParams: CreateSolutionRatingDTO): Promise<any> {
+    console.log('ratingParams', ratingParams);
+
     if (ratingParams.forOfferer && !ratingParams.forQuestioner) {
+      await this.userModel.updateOne(
+        { _id: ratingParams.offererId },
+        {
+          $inc: {
+            'ratingAsSolver.totalOfferingCount': 1,
+            'ratingAsSolver.totalRatingCount': 1,
+            'ratingAsSolver.totalRatingSum': ratingParams.rating,
+            'ratingAsSolver.totalAcceptedCount': 1,
+          },
+        },
+      );
+
       return await this.solutionAttemptedModel.updateOne(
         {
           questionId: ratingParams.questionId,
@@ -59,6 +75,18 @@ export class SolutionAttemptService {
         },
       );
     } else {
+      await this.userModel.updateOne(
+        { _id: ratingParams.questionerId },
+        {
+          $inc: {
+            'reputationAsQuestioner.totalMarkedSolved':
+              ratingParams.markedSolved ? 1 : 0,
+            'reputationAsQuestioner.totalRatingsCount': 1,
+            'reputationAsQuestioner.totalRatingsSum': ratingParams.rating,
+          },
+        },
+      );
+
       return await this.solutionAttemptedModel.updateOne(
         {
           questionId: ratingParams.questionId,

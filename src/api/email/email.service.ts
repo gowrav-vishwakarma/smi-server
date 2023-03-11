@@ -10,12 +10,12 @@ export class MailerService {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: 'smtp.hostinger.com',
-      port: 465,
-      secure: true, // true for 465, false for other ports
+      host: process.env.MAILER_HOST,
+      port: process.env.MAILER_PORT,
+      secure: process.env.MAILER_SECURE, // true for 465, false for other ports
       auth: {
-        user: 'info@maxbbps.com',
-        pass: 'Shekar@456sw@!sc',
+        user: process.env.MAILER_AUTH_USER,
+        pass: process.env.MAILER_AUTH_PASSWORD,
       },
     });
   }
@@ -25,16 +25,16 @@ export class MailerService {
     subject: string,
     template: string,
     context: object,
-  ) {
+  ): Promise<any> {
     // read the template file
     const html = await this.renderTemplate(template, context);
 
     // send the email using nodemailer
-    await this.transporter.sendMail({
+    return await this.transporter.sendMail({
       from: 'info@maxbbps.com',
       to,
       subject,
-      text: 'This is a test email from NestJS' + html,
+      text: 'This is a test email from NestJS',
       html,
     });
   }
