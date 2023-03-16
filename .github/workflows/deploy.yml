@@ -22,13 +22,13 @@ jobs:
 
       - name: Build
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_BUCKET: solvemyissue-user-data
           AWS_REGION: ap-south-1
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_BUCKET: solvemyissue-user-data
           CLIENT_URL: https://smi.mycompanyclub.com
-          DATABASE: ${{ secrets.DATABASE }}
           PORT: 80
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DATABASE: ${{ secrets.DATABASE }}
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
         run: npm run build
 
