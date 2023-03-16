@@ -33,7 +33,7 @@ jobs:
         run: npm run build
 
       - name: Add restart.txt
-        run: mkdir -p ./dist/tmp && touch ./dist/tmp/restart.txt
+        run: mkdir -p ./dist/tmp && date > ./dist/tmp/restart.txt
 
       - name: Deploy
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
