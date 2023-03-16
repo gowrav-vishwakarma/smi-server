@@ -6,6 +6,7 @@ import { VoteCommentDTO } from '../dto/vote-comment.dto';
 import { Comment, CommentDocument } from '../schemas/comment.schema';
 import { UserDocument } from '../schemas/user.schema';
 import { Vote, VoteDocument } from '../schemas/vote.schema';
+import { Question, QuestionDocument } from '../schemas/question.schema';
 
 @Injectable()
 export class CommentsService {
@@ -14,6 +15,8 @@ export class CommentsService {
     private readonly commentModel: Model<CommentDocument>,
     @InjectModel(Vote.name)
     private readonly voteModel: Model<VoteDocument>,
+    @InjectModel(Question.name)
+    private readonly questionModel: Model<QuestionDocument>,
   ) {}
 
   async createComment(
@@ -24,6 +27,15 @@ export class CommentsService {
       ...createCommentDto,
       commenterId: user._id,
     };
+
+    await this.questionModel.updateOne(
+      { _id: commentData.questionId },
+      {
+        $inc: {
+          'questionValue.totalCommentsCount': 1,
+        },
+      },
+    );
     return await this.commentModel.create(commentData);
   }
 
