@@ -23,6 +23,8 @@ import { SolutionAttemptedSchema } from './schemas/solutionattempted.schema';
 import { TopicSchema } from './schemas/topic.schema';
 import { TopicsController } from './topic/topics.controller';
 import { TopicsService } from './topic/topics.service';
+import { MailerController } from './email/email.controller';
+import { MailerService } from './email/email.service';
 
 @Module({
   imports: [
@@ -46,6 +48,7 @@ import { TopicsService } from './topic/topics.service';
     OffersController,
     SolutionAttemptController,
     TopicsController,
+    MailerController,
   ],
   providers: [
     QuestionsService,
@@ -55,6 +58,7 @@ import { TopicsService } from './topic/topics.service';
     OffersService,
     SolutionAttemptService,
     TopicsService,
+    MailerService,
   ],
   exports: [UsersService, MongooseModule],
 })

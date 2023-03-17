@@ -32,14 +32,23 @@ export class UsersService {
   }
 
   async updateUser(updateUserDto: any): Promise<any> {
+    if (!updateUserDto.userId || updateUserDto.userId == undefined) return;
+
     try {
-      return await this.userModel.updateOne(
-        { _id: updateUserDto.userId },
-        updateUserDto,
-      );
-      // const um = await this.userModel.findById(updateUserDto.userId).exec();
-      // um.experiences = updateUserDto.experiences;
-      // return um.save();
+      console.log('updateUserDto.password', updateUserDto.password);
+
+      if (updateUserDto.password) {
+        // for update password only
+        console.log('updateUserDto.password save method');
+        const um = await this.userModel.findById(updateUserDto.userId).exec();
+        um.password = updateUserDto.password;
+        return um.save();
+      } else {
+        return await this.userModel.updateOne(
+          { _id: updateUserDto.userId },
+          updateUserDto,
+        );
+      }
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException('Username already exists');

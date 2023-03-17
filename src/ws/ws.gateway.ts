@@ -1,4 +1,7 @@
 import { Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+
 import {
   ConnectedSocket,
   MessageBody,
@@ -11,8 +14,21 @@ import {
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 
+import {
+  SolutionAttempted,
+  SolutionAttemptedDocument,
+  SolutionAttemptedStatus,
+} from '../api/schemas/solutionattempted.schema';
+import { User, UserDocument } from '../api/schemas/user.schema';
+
 @WebSocketGateway({ cors: true })
 export class WsGateway implements OnGatewayInit, OnGatewayConnection {
+  constructor(
+    @InjectModel(SolutionAttempted.name)
+    private readonly solutionAttemptedModel: Model<SolutionAttemptedDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+  ) {}
+
   private logger: Logger = new Logger('WsGateway');
 
   @WebSocketServer() server: Socket;
@@ -41,14 +57,42 @@ export class WsGateway implements OnGatewayInit, OnGatewayConnection {
   }
 
   @SubscribeMessage('acceptCall')
-  handleAcceptCall(
+  async handleAcceptCall(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: any,
+  ): Promise<any> {
+    console.log('server Call Accepted', payload);
+    await this.solutionAttemptedModel.updateOne(
+      {
+        _id: payload.solutionOfferId,
+      },
+      {
+        status: 'ACCEPTED',
+      },
+    );
+
+    // update user status
+    await this.userModel.updateMany(
+      {
+        _id: { $in: [payload.to, payload.from] },
+      },
+      {
+        onlineStatus: 'BUSY',
+      },
+    );
+    this.server.to(payload.to).emit('callAccepted', payload);
+    // todo remove this emit to who accepted the call todo manage at client side
+    // this.server.to(payload.from).emit('callAccepted', payload);
+  }
+
+  @SubscribeMessage('hangupCall')
+  hangupCall(
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: any,
   ): void {
-    console.log('server Call Accepted', payload);
-    this.server.to(payload.to).emit('callAccepted', payload);
-    // todo remove this emit to who accepted the call todo manage at client side
-    this.server.to(payload.from).emit('callAccepted', payload);
+    console.log('server Call hangup Accepted', payload);
+
+    this.server.to(payload.to).emit('callHanguped', payload);
   }
 
   @SubscribeMessage('disconnectCall')

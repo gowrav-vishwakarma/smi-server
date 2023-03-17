@@ -140,7 +140,14 @@ export class QuestionsService {
       },
     });
 
+    const limit = 2;
     pipeline.push({ $unwind: '$byUser' });
+    pipeline.push({
+      $skip: (page - 1) * limit,
+    });
+    pipeline.push({
+      $limit: +limit,
+    });
 
     const questions = await this.questionModel.aggregate(pipeline);
 
@@ -349,6 +356,7 @@ export class QuestionsService {
               : -1,
           },
         },
+        { returnOriginal: false },
       );
     }
     if (voteDto.vote === 'down' && updateCount) {
@@ -381,7 +389,7 @@ export class QuestionsService {
     return offerDetails;
   }
 
-  async updateVideoURL(qId: string, videoS3Path: string) {
+  async updateVideoURL(qId: string, videoS3Path: string): Promise<any> {
     return await this.questionModel.updateOne(
       { _id: qId },
       {

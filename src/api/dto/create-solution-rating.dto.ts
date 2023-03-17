@@ -22,4 +22,13 @@ export class CreateSolutionRatingDTO {
 
   @ApiProperty()
   solutionAttemptId: string;
+
+  @ApiProperty()
+  forOfferer: boolean;
+
+  @ApiProperty()
+  forQuestioner: boolean;
+
+  @ApiProperty()
+  markedSolved: boolean;
 }

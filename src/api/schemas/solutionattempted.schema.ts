@@ -1,6 +1,7 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { User } from 'src/api/schemas/user.schema';
 
 export type SolutionAttemptedDocument = SolutionAttempted & Document;
 
@@ -18,14 +19,14 @@ export class SolutionAttempted {
   @Prop({ type: mongoose.Schema.Types.ObjectId, required: true })
   questionerId: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })
-  questioner: string;
+  @Prop({ required: true })
+  questioner: mongoose.Schema.Types.Mixed;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, required: true })
   offererId: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })
-  offerer: string;
+  @Prop({ required: true })
+  offerer: mongoose.Schema.Types.Mixed;
 
   @Prop({ required: false })
   notes: string;
@@ -39,6 +40,32 @@ export class SolutionAttempted {
     type: String,
   })
   status: string;
+
+  @Prop({ required: false, default: Date.now() })
+  solutionMeetingStardAt: Date;
+
+  @Prop({ required: false, default: Date.now() })
+  solutionMeetingFinishedAt: Date;
+
+  @Prop({
+    required: true,
+    default: 0,
+    type: Number,
+  })
+  ratingForSolver: number;
+
+  @Prop({ required: false })
+  ratingCommentForSolver: string;
+
+  @Prop({
+    required: true,
+    default: 0,
+    type: Number,
+  })
+  ratingForQuestioner: number;
+
+  @Prop({ required: false })
+  ratingCommentForQuestioner: string;
 }
 
 export const SolutionAttemptedSchema =

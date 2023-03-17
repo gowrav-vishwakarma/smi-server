@@ -25,6 +25,8 @@ import { QuestionDocument } from '../schemas/question.schema';
 import { UserDocument } from '../schemas/user.schema';
 import { QuestionsService } from './questions.service';
 
+import { Express } from 'express';
+
 @Controller('questions')
 @ApiTags('Questions')
 export class QuestionsController {
@@ -101,7 +103,7 @@ export class QuestionsController {
     if (video) {
       const mediaRes = await this.mediaService.createMedia(
         video,
-        createdQuestion._id,
+        `nest-question/${createdQuestion._id}/video.webm`,
       );
       await this.questionsService.updateVideoURL(
         createdQuestion._id,
