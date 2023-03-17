@@ -1,0 +1,55 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches:
+      - __master__
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2.4.0
+        with:
+          node-version: '14.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        env:
+          AWS_REGION: ap-south-1
+          AWS_BUCKET: solvemyissue-user-data
+          CLIENT_URL: https://smi.mycompanyclub.com
+          PORT: 80
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DATABASE: ${{ secrets.DATABASE }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+        run: npm run build
+
+      - name: Add restart.txt
+        run: mkdir -p ./tmp && date > ./tmp/restart.txt
+
+      - name: Create env file in root
+        run: |
+          echo "AWS_REGION=ap-south-1" > ./.env
+          echo "AWS_BUCKET=solvemyissue-user-data" >> ./.env
+          echo "CLIENT_URL=https://smi.mycompanyclub.com" >> ./.env
+          echo "PORT=80" >> ./.env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> ./.env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ./.env
+          echo "DATABASE=${{ secrets.DATABASE }}" >> ./.env
+          echo "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}" >> ./.env
+
+      - name: Deploy
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.CPANEL_SERVER }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          password: ${{ secrets.CPANEL_PASSWORD }}
+          local-dir: './'
