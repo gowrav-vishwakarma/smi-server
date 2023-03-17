@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/mycompan/smiapi.mycompanyclub.com
+    - source /home/mycompan/nodevenv/smiapi.mycompanyclub.com/14/bin/activate && cd /home/mycompan/smiapi.mycompanyclub.com
+    - npm ci
+    - npm run build
+    - date > tmp/restart.txt
