@@ -9,6 +9,7 @@ export class LoginResponseDTO {
     userToppics: string[];
     // userTags: string[];
     userLanguages: string[];
+    onlineStatus: string | null;
   };
 
   @ApiProperty()

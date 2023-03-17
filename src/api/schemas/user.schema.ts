@@ -184,7 +184,7 @@ export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: false })
+  @Prop({ required: true })
   contactNo: string;
 
   @Prop({ required: false, unique: true })
@@ -230,10 +230,7 @@ export class User {
   avatar: string;
 
   @Prop({ required: false })
-  profileImage: string;
-
-  @Prop({ required: false })
-  coverImage: string;
+  profileCoverImage: string;
 
   @Prop({ required: false })
   topicsInterestedIn: string[];

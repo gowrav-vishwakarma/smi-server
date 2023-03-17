@@ -36,6 +36,7 @@ export class AuthService {
         email: user.email,
         userToppics: user.topicsInterestedIn,
         userLanguages: user.languagesSpeaks,
+        onlineStatus: user.onlineStatus,
       },
       accessToken,
     };

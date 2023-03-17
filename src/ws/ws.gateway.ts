@@ -19,12 +19,14 @@ import {
   SolutionAttemptedDocument,
   SolutionAttemptedStatus,
 } from '../api/schemas/solutionattempted.schema';
+import { User, UserDocument } from '../api/schemas/user.schema';
 
 @WebSocketGateway({ cors: true })
 export class WsGateway implements OnGatewayInit, OnGatewayConnection {
   constructor(
     @InjectModel(SolutionAttempted.name)
     private readonly solutionAttemptedModel: Model<SolutionAttemptedDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
   private logger: Logger = new Logger('WsGateway');
@@ -41,9 +43,12 @@ export class WsGateway implements OnGatewayInit, OnGatewayConnection {
     this.logger.log(
       `WS Client connected username: ${client.handshake.auth.username}`,
     );
+
     client.emit('session', {
       username: client.handshake.auth.username,
     });
+
+    // update user status online
   }
 
   @SubscribeMessage('initiateCall')
@@ -60,8 +65,6 @@ export class WsGateway implements OnGatewayInit, OnGatewayConnection {
     @MessageBody() payload: any,
   ): Promise<any> {
     console.log('server Call Accepted', payload);
-    this.server.to(payload.to).emit('callAccepted', payload);
-
     await this.solutionAttemptedModel.updateOne(
       {
         _id: payload.solutionOfferId,
@@ -71,6 +74,16 @@ export class WsGateway implements OnGatewayInit, OnGatewayConnection {
       },
     );
 
+    // update user status
+    await this.userModel.updateMany(
+      {
+        _id: { $in: [payload.to, payload.from] },
+      },
+      {
+        onlineStatus: 'BUSY',
+      },
+    );
+    this.server.to(payload.to).emit('callAccepted', payload);
     // todo remove this emit to who accepted the call todo manage at client side
     // this.server.to(payload.from).emit('callAccepted', payload);
   }
