@@ -1,0 +1,19 @@
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/mycompan/smiapi.mycompanyclub.com"
+PassengerBaseURI "/"
+PassengerNodejs "/home/mycompan/nodevenv/smiapi.mycompanyclub.com/14/bin/node"
+PassengerAppType node
+PassengerStartupFile dist/main.js
+PassengerAppLogFile "/home/mycompan/smiapi.log"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+<IfModule Litespeed>
+SetEnv DATABASE mongodb+srv://smi_admin_atlas:ThJ58ACwbrV7iP2E@cluster0.y1du6uf.mongodb.net/smi?retryWrites=true&w=majority
+SetEnv AWS_BUCKET solvemyissue-user-data
+SetEnv AWS_ACCESS_KEY_ID AKIAQ5UZAYOUWKVSTQGH
+SetEnv AWS_SECRET_ACCESS_KEY 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
+SetEnv AWS_REGION ap-south-1
+SetEnv SENDGRID_API_KEY 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
+SetEnv CLIENT_URL https://smi.mycompanyclub.com
+</IfModule>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END
