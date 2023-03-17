@@ -43,9 +43,12 @@ export class WsGateway implements OnGatewayInit, OnGatewayConnection {
     this.logger.log(
       `WS Client connected username: ${client.handshake.auth.username}`,
     );
+
     client.emit('session', {
       username: client.handshake.auth.username,
     });
+
+    // update user status online
   }
 
   @SubscribeMessage('initiateCall')
