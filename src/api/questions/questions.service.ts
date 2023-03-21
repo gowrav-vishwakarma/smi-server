@@ -134,6 +134,7 @@ export class QuestionsService {
               name: 1,
               languagesSpeaks: 1,
               reputationAsQuestioner: 1,
+              post: 1,
             },
           },
         ],
