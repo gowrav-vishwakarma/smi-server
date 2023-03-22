@@ -259,7 +259,7 @@ export class QuestionsService {
           as: 'Offerer',
           pipeline: [
             {
-              $project: { name: 1, ratingAsSolver: 1 },
+              $project: { name: 1, ratingAsSolver: 1, post: 1 },
             },
           ],
         },
