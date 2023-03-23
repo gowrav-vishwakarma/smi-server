@@ -134,6 +134,7 @@ export class QuestionsService {
               name: 1,
               languagesSpeaks: 1,
               reputationAsQuestioner: 1,
+              post: 1,
             },
           },
         ],
@@ -258,7 +259,7 @@ export class QuestionsService {
           as: 'Offerer',
           pipeline: [
             {
-              $project: { name: 1, ratingAsSolver: 1 },
+              $project: { name: 1, ratingAsSolver: 1, post: 1 },
             },
           ],
         },

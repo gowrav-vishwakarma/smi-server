@@ -6,6 +6,7 @@ import {
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
+  OnGatewayDisconnect,
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
@@ -22,7 +23,9 @@ import {
 import { User, UserDocument } from '../api/schemas/user.schema';
 
 @WebSocketGateway({ cors: true })
-export class WsGateway implements OnGatewayInit, OnGatewayConnection {
+export class WsGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   constructor(
     @InjectModel(SolutionAttempted.name)
     private readonly solutionAttemptedModel: Model<SolutionAttemptedDocument>,
@@ -30,6 +33,7 @@ export class WsGateway implements OnGatewayInit, OnGatewayConnection {
   ) {}
 
   private logger: Logger = new Logger('WsGateway');
+  private connectedClients = new Map<string, Socket>();
 
   @WebSocketServer() server: Socket;
 
@@ -40,8 +44,12 @@ export class WsGateway implements OnGatewayInit, OnGatewayConnection {
   handleConnection(@ConnectedSocket() client: Socket): void {
     this.logger.log(`WS Client connected: ${client.id}`);
     client.join(client.handshake.auth.username);
+
+    this.connectedClients.set(client.id, client);
+
     this.logger.log(
       `WS Client connected username: ${client.handshake.auth.username}`,
+      this.connectedClients[client.handshake.auth.username],
     );
 
     client.emit('session', {
@@ -50,6 +58,41 @@ export class WsGateway implements OnGatewayInit, OnGatewayConnection {
 
     // update user status online
   }
+
+  handleDisconnect(client: Socket) {
+    this.connectedClients.delete(client.id);
+    console.log(
+      'Client disconnected:',
+      client.id,
+      this.connectedClients[client.id],
+    );
+  }
+
+  getClientById(clientId: string): Socket | undefined {
+    return this.connectedClients.get(clientId);
+  }
+
+  // here userId= SMI User Model ID
+  // and client = socket client
+  getConnectedClientIdByUserId(userIds?: string[]): string[] {
+    if (userIds) {
+      return Array.from(this.connectedClients.values())
+        .filter((client) => {
+          console.log(
+            'checking for user ',
+            client.handshake.auth.username,
+            userIds.includes(client.handshake.auth.username),
+          );
+          return userIds.includes(client.handshake.auth.username);
+        })
+        .map((client) => client.handshake.auth.username);
+    }
+    return [];
+  }
+
+  // getClientByUserId(clientId: string): Socket | undefined {
+  //   return this.connectedClients.get(clientId);
+  // }
 
   @SubscribeMessage('initiateCall')
   handleInitiateCall(
@@ -159,5 +202,27 @@ export class WsGateway implements OnGatewayInit, OnGatewayConnection {
   ): void {
     console.log('RtcStream', payload);
     // this.server.to(payload.to).emit('RtcDisconnect', client.id, payload);
+  }
+
+  @SubscribeMessage('checkUserConnected')
+  handleCheckUserConnected(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      userId: string[];
+      questionId: string;
+    },
+  ) {
+    if (payload && payload.userId.length) {
+      let onlineUser = this.getConnectedClientIdByUserId(payload.userId);
+      if (onlineUser.length) {
+        this.server.to(client.id).emit('checkedUserConnected', {
+          questionId: payload.questionId,
+          onlineUserIds: onlineUser,
+        });
+
+        // this.server.to(payload.to).emit('RtcAnswer', payload);
+      }
+    }
   }
 }
