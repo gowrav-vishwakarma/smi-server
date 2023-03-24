@@ -29,27 +29,19 @@ export class AuthController {
     const userData = await this.authService.registerUser(registerUserDTO);
     console.log(userData);
 
-    // todo send email
-    // const res = await this.mailerService.sendMail(
-    //   'rakesh.s@frendy.in',
-    //   'Welcome Email',
-    //   'welcome-template.html',
-    //   {
-    //     title: 'hello',
-    //     message: 'This is a test email',
-    //   },
-    // );
-    await this.mailerService.sendMail(
-      'rakesh.s@frendy.in',
-      'SolveMyIssue verification email',
-      'verification-template.html',
-      {
-        title: 'Verification OTP',
-        message: 'Your OTP',
-        verification_link: userData.authToken,
-        otp: userData.authOTP,
-      },
-    );
+    try {
+      await this.mailerService.sendMail(
+        'rakesh.s@frendy.in',
+        'SolveMyIssue verification email',
+        'verification-template.html',
+        {
+          title: 'Verification OTP',
+          message: 'Your OTP',
+          verification_link: userData.authToken,
+          otp: userData.authOTP,
+        },
+      );
+    } catch (error) {}
     return { message: 'User created successfully' };
   }
 
