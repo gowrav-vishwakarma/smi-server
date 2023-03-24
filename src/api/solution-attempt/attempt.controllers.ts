@@ -21,14 +21,14 @@ import { SolutionAttemptedDocument } from '../schemas/solutionattempted.schema';
 import { UserDocument } from '../schemas/user.schema';
 import { SolutionAttemptService } from './attempt.service';
 
-import { MailerService } from '../email/email.service';
+// import { MailerService } from '../email/email.service';
 
 @Controller('solution-attempt')
 export class SolutionAttemptController {
   constructor(
     private readonly solutionAttemptService: SolutionAttemptService,
-    private readonly mailerService: MailerService,
-  ) {}
+  ) // private readonly mailerService: MailerService,
+  {}
 
   @Post('create')
   @ApiTags('SolutionAttempt')
@@ -52,17 +52,6 @@ export class SolutionAttemptController {
     // @Body() Rating: CreateSolutionRatingDTO,
   ): Promise<SolutionAttemptedDocument> {
     // Promise<SolutionAttemptedDocument> {
-
-    // todo send email
-    // const res = await this.mailerService.sendMail(
-    //   'rakesh.s@frendy.in',
-    //   'Welcome Email',
-    //   'welcome-template.html',
-    //   {
-    //     title: 'hello',
-    //     message: 'This is a test email',
-    //   },
-    // );
 
     // console.log(res);
 
