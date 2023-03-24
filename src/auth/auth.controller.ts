@@ -42,6 +42,7 @@ export class AuthController {
         },
       );
     } catch (error) {}
+
     return { message: 'User created successfully' };
   }
 
