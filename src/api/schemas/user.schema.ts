@@ -184,7 +184,7 @@ export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   contactNo: string;
 
   @Prop({ required: false, unique: true })
@@ -291,6 +291,12 @@ export class User {
 
   @Prop({ type: String })
   jobType: string;
+
+  @Prop({ type: String })
+  authOTP: string;
+
+  @Prop({ type: String })
+  authToken: string;
 }
 
 // export const ExperienceType = SchemaFactory.createForClass(experienceType);
@@ -300,6 +306,13 @@ UserSchema.pre<UserDocument>('save', function (next) {
   if (this.isModified('password')) {
     this.password = bcrypt.hashSync(this.password, 8);
   }
+
+  if (this.status == 'REGISTERED') {
+    this.authOTP =
+      '' + Math.abs(Math.floor(Math.random() * (111111 - 999999) + 111111));
+    this.authToken = bcrypt.hashSync(this.authOTP, 8);
+  }
+
   this.username = this.email;
   next();
 });

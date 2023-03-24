@@ -60,6 +60,6 @@ import { MailerService } from './email/email.service';
     TopicsService,
     MailerService,
   ],
-  exports: [UsersService, MongooseModule],
+  exports: [UsersService, MongooseModule, MailerService],
 })
 export class ApiModule {}

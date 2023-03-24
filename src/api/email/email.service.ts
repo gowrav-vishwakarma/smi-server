@@ -46,7 +46,7 @@ export class MailerService {
     // read the template file from disk
     const filePath = path.join(
       __dirname,
-      '../../../src/emailTemplate/welcome-template.html',
+      '../../../src/emailTemplate/' + template,
     );
     const source = fs.readFileSync(filePath, 'utf-8');
     // compile the template using handlebars
