@@ -55,7 +55,9 @@ export class AuthController {
 
   @Post('sendverification')
   @UsePipes(ValidationPipe)
-  async sendVerification(@Body() payload: { username: string }): Promise<any> {
+  async sendVerificationOTP(
+    @Body() payload: { username: string },
+  ): Promise<any> {
     const userData = await this.userService.findUserByUsername(
       payload.username,
     );
@@ -72,5 +74,13 @@ export class AuthController {
     );
 
     return { message: 'verification send successfully' };
+  }
+
+  @Post('verification')
+  @UsePipes(ValidationPipe)
+  async verifyUser(
+    @Body() payload: { username: string; authtoken: string },
+  ): Promise<any> {
+    return this.authService.verifyUser(payload);
   }
 }
