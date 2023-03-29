@@ -61,17 +61,21 @@ export class AuthController {
     const userData = await this.userService.findUserByUsername(
       payload.username,
     );
-    await this.mailerService.sendMail(
-      userData.email,
-      'SolveMyIssue verification email',
-      'verification-template.html',
-      {
-        title: 'Verification OTP',
-        message: 'Your OTP',
-        verification_link: userData.authToken,
-        otp: userData.authOTP,
-      },
-    );
+
+    console.log('userData', userData);
+    if (userData) {
+      await this.mailerService.sendMail(
+        userData.email,
+        'SolveMyIssue verification email',
+        'verification-template.html',
+        {
+          title: 'Verification OTP',
+          message: 'Your OTP',
+          verification_link: userData.authToken,
+          otp: userData.authOTP,
+        },
+      );
+    }
 
     return { message: 'verification send successfully' };
   }

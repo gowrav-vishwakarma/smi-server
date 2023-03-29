@@ -68,6 +68,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid otp');
     }
 
+    this.usersService.updateUser({
+      userId: user._id,
+      status: 'ACTIVE',
+    });
+
     const payload: JwtPayload = { _id: user._id, username: user.username };
     const accessToken = this.JwtService.sign(payload);
 
