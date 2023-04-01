@@ -32,14 +32,20 @@ export class AuthController {
 
     try {
       await this.mailerService.sendMail(
-        'rakesh.s@frendy.in',
-        'SolveMyIssue verification email',
+        userData.email,
+        'SolveMyIssue Verification email',
         'verification-template.html',
         {
           title: 'Verification OTP',
           message: 'Your OTP',
-          verification_link: userData.authToken,
+          verification_link:
+            process.env.CLIENT_URL +
+            '/verification/' +
+            userData.username +
+            '/' +
+            userData.authToken,
           otp: userData.authOTP,
+          username: userData.username,
         },
       );
     } catch (error) {}
@@ -66,13 +72,19 @@ export class AuthController {
     if (userData) {
       await this.mailerService.sendMail(
         userData.email,
-        'SolveMyIssue verification email',
+        'SolveMyIssue Verification email',
         'verification-template.html',
         {
           title: 'Verification OTP',
           message: 'Your OTP',
-          verification_link: userData.authToken,
+          verification_link:
+            process.env.CLIENT_URL +
+            '/verification/' +
+            userData.username +
+            '/' +
+            userData.authToken,
           otp: userData.authOTP,
+          username: userData.username,
         },
       );
     }
