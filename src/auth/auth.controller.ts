@@ -7,6 +7,8 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginUserDTO } from 'src/auth/dto/user-login.dto';
@@ -98,5 +100,40 @@ export class AuthController {
     @Body() payload: { username: string; authtoken: string },
   ): Promise<any> {
     return this.authService.verifyUser(payload);
+  }
+
+  @Post('sendresetpasswordlink')
+  @UsePipes(ValidationPipe)
+  async sendResetPasswordLink(
+    @Body() payload: { emailId: string },
+  ): Promise<any> {
+    const userData = await this.userService.findUserByUsername(payload.emailId);
+
+    console.log('userData', userData);
+    if (userData) {
+      await this.mailerService.sendMail(
+        userData.email,
+        'SolveMyIssue Password Reset Link',
+        'passwordReset-template.html',
+        {
+          title: 'Password Reset Link',
+          message: 'Password Reset Link',
+          verification_link:
+            process.env.CLIENT_URL +
+            '/resetpassword/' +
+            userData.username +
+            '/' +
+            userData.authToken,
+          otp: userData.authOTP,
+          username: userData.username,
+        },
+      );
+      return { message: 'password reset link send successfully' };
+    } else {
+      throw new HttpException(
+        'your email id is not registered with us',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

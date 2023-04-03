@@ -71,6 +71,7 @@ export class AuthService {
     this.usersService.updateUser({
       userId: user._id,
       status: 'ACTIVE',
+      authToken: null,
     });
 
     const payload: JwtPayload = { _id: user._id, username: user.username };
