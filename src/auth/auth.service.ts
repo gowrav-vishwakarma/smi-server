@@ -19,13 +19,25 @@ export class AuthService {
     return this.usersService.createUser(registerUserDto);
   }
 
+  /**
+   * login work with both password and token
+   */
   async loginUser(loginUserDTO: LoginUserDTO): Promise<LoginResponseDTO> {
-    const { username, password } = loginUserDTO;
-
+    const { username, password, token } = loginUserDTO;
     const user = await this.usersService.findUserByUsername(username);
-    if (!user || !bcrypt.compareSync(password, user.password)) {
+
+    let data = user.password;
+    let hash = password;
+
+    if (token != undefined && token != 'undefined') {
+      hash = user.authOTP;
+      data = token;
+    }
+
+    if (!user || !bcrypt.compareSync(hash, data)) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
     const payload: JwtPayload = { _id: user._id, username: user.username };
     const accessToken = this.JwtService.sign(payload);
 

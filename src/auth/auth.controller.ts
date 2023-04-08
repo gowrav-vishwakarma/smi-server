@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginUserDTO } from 'src/auth/dto/user-login.dto';
+import { LoginUserWithTokenDTO } from 'src/auth/dto/user-login-withtoken.dto';
 import { RegisterUserDTO } from 'src/auth/dto/user-register.dto';
 import { User } from 'src/api/schemas/user.schema';
 import { AuthService } from './auth.service';
@@ -59,6 +60,16 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   loginUser(@Body() loginUserDTO: LoginUserDTO) {
     return this.authService.loginUser(loginUserDTO);
+  }
+
+  @Post('loginwithtoken')
+  @UsePipes(ValidationPipe)
+  loginUserWithToken(@Body() loginUserDetail: LoginUserWithTokenDTO) {
+    return this.authService.loginUser({
+      token: loginUserDetail.token,
+      username: loginUserDetail.username,
+      password: undefined,
+    });
   }
 
   @Post('sendverification')
