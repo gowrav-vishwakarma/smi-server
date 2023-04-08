@@ -35,8 +35,6 @@ export class UsersService {
     if (!updateUserDto.userId || updateUserDto.userId == undefined) return;
 
     try {
-      console.log('updateUserDto.password', updateUserDto.password);
-
       if (updateUserDto.password) {
         // for update password only
         console.log('updateUserDto.password save method');
@@ -44,6 +42,11 @@ export class UsersService {
         um.password = updateUserDto.password;
         return um.save();
       } else {
+        // converting jsonstring to jsonObject
+        if (updateUserDto.socialProfile != null) {
+          updateUserDto.socialProfile = JSON.parse(updateUserDto.socialProfile);
+        }
+
         return await this.userModel.updateOne(
           { _id: updateUserDto.userId },
           updateUserDto,
