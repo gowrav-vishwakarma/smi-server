@@ -141,7 +141,7 @@ export class QuestionsService {
       },
     });
 
-    const limit = 2;
+    const limit = 10;
     pipeline.push({ $unwind: '$byUser' });
     pipeline.push({
       $skip: (page - 1) * limit,
