@@ -16,7 +16,7 @@ export class UsersService {
       return await user.save();
     } catch (error) {
       if (error.code === 11000) {
-        throw new ConflictException('Username already exists');
+        throw new ConflictException('Username/email Id already exists');
       } else {
         throw error;
       }

@@ -101,4 +101,37 @@ export class AuthService {
       accessToken,
     };
   }
+
+  async verifyUserOTP(verifyUserPayload: {
+    username: string;
+    code: string;
+  }): Promise<LoginResponseDTO> {
+    const user = await this.usersService.findUserByUsername(
+      verifyUserPayload.username,
+    );
+    if (!user || user.authOTP != verifyUserPayload.code) {
+      throw new UnauthorizedException('Invalid otp');
+    }
+
+    this.usersService.updateUser({
+      userId: user._id,
+      status: 'ACTIVE',
+      authToken: null,
+    });
+
+    const payload: JwtPayload = { _id: user._id, username: user.username };
+    const accessToken = this.JwtService.sign(payload);
+
+    return {
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        userToppics: user.topicsInterestedIn,
+        userLanguages: user.languagesSpeaks,
+        onlineStatus: user.onlineStatus,
+      },
+      accessToken,
+    };
+  }
 }

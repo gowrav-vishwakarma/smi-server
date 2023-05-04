@@ -113,6 +113,14 @@ export class AuthController {
     return this.authService.verifyUser(payload);
   }
 
+  @Post('otpverification')
+  @UsePipes(ValidationPipe)
+  async verifyUserOTP(
+    @Body() payload: { username: string; code: string },
+  ): Promise<any> {
+    return this.authService.verifyUserOTP(payload);
+  }
+
   @Post('sendresetpasswordlink')
   @UsePipes(ValidationPipe)
   async sendResetPasswordLink(
