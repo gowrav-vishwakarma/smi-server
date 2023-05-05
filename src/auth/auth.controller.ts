@@ -18,6 +18,7 @@ import { User } from 'src/api/schemas/user.schema';
 import { AuthService } from './auth.service';
 import { MailerService } from 'src/api/email/email.service';
 import { UsersService } from 'src/api/users/users.service';
+import * as bcrypt from 'bcrypt';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -128,8 +129,18 @@ export class AuthController {
   ): Promise<any> {
     const userData = await this.userService.findUserByUsername(payload.emailId);
 
-    console.log('userData', userData);
     if (userData) {
+      const authOTP =
+        '' + Math.abs(Math.floor(Math.random() * (111111 - 999999) + 111111));
+      const authToken = bcrypt.hashSync(authOTP, 8);
+
+      await this.userService.updateUser({
+        authOTP: authOTP,
+        authToken: authToken,
+        userId: userData._id,
+      });
+
+      // console.log('userData', userData);
       await this.mailerService.sendMail(
         userData.email,
         'SolveMyIssue Password Reset Link',
@@ -142,8 +153,8 @@ export class AuthController {
             '/resetpassword/' +
             userData.username +
             '/' +
-            userData.authToken,
-          otp: userData.authOTP,
+            authToken,
+          otp: authOTP,
           username: userData.username,
         },
       );
