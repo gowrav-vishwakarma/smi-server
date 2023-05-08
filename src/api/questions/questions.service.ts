@@ -50,7 +50,7 @@ export class QuestionsService {
       };
     }
 
-    if (filterOptions.topics) {
+    if (filterOptions.topics && filterOptions.topics.length > 0) {
       matchCondition['topic'] = { $in: filterOptions.topics };
     }
 
