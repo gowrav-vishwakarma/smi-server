@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  NotAcceptableException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RegisterUserDTO } from '../../auth/dto/user-register.dto';
@@ -15,8 +19,14 @@ export class UsersService {
     try {
       return await user.save();
     } catch (error) {
+      const checkUser = await this.findUserByUsername(registerUserDto.email);
+      console.log(checkUser);
+      if (checkUser && checkUser.status == 'REGISTERED') {
+        throw new NotAcceptableException('User REGISTERED But Not Active');
+      }
+
       if (error.code === 11000) {
-        throw new ConflictException('Username already exists');
+        throw new ConflictException('Username/email Id already exists');
       } else {
         throw error;
       }

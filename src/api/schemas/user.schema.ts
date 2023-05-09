@@ -227,7 +227,7 @@ export class User {
   status: string;
 
   @Prop({ required: false })
-  avatar: string;
+  profileImage: string;
 
   @Prop({ required: false })
   profileCoverImage: string;

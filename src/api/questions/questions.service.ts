@@ -132,9 +132,11 @@ export class QuestionsService {
           {
             $project: {
               name: 1,
+              // avatar: 1,
               languagesSpeaks: 1,
               reputationAsQuestioner: 1,
               post: 1,
+              profileImage: 1,
             },
           },
         ],
