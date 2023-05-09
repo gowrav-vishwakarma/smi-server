@@ -78,12 +78,25 @@ export class AuthController {
   async sendVerificationOTP(
     @Body() payload: { username: string },
   ): Promise<any> {
+    // const userData = await this.userService.findUserByUsername(
+    //   payload.username,
+    // );
+
     const userData = await this.userService.findUserByUsername(
       payload.username,
     );
+    const authOTP = '' + Math.floor(100000 + Math.random() * 900000);
+    const authToken = bcrypt.hashSync(authOTP, 8);
 
     console.log('userData', userData);
+
     if (userData) {
+      await this.userService.updateUser({
+        authOTP: authOTP,
+        authToken: authToken,
+        userId: userData._id,
+      });
+
       await this.mailerService.sendMail(
         userData.email,
         'SolveMyIssue Verification email',
@@ -96,8 +109,8 @@ export class AuthController {
             '/verification/' +
             userData.username +
             '/' +
-            userData.authToken,
-          otp: userData.authOTP,
+            authToken,
+          otp: authOTP,
           username: userData.username,
         },
       );
@@ -130,8 +143,7 @@ export class AuthController {
     const userData = await this.userService.findUserByUsername(payload.emailId);
 
     if (userData) {
-      const authOTP =
-        '' + Math.abs(Math.floor(Math.random() * (111111 - 999999) + 111111));
+      const authOTP = '' + Math.floor(100000 + Math.random() * 900000);
       const authToken = bcrypt.hashSync(authOTP, 8);
 
       await this.userService.updateUser({
