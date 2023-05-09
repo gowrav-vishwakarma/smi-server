@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  NotAcceptableException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RegisterUserDTO } from '../../auth/dto/user-register.dto';
@@ -15,8 +19,14 @@ export class UsersService {
     try {
       return await user.save();
     } catch (error) {
+      const checkUser = await this.findUserByUsername(registerUserDto.email);
+      console.log(checkUser);
+      if (checkUser && checkUser.status == 'REGISTERED') {
+        throw new NotAcceptableException('User REGISTERED But Not Active');
+      }
+
       if (error.code === 11000) {
-        throw new ConflictException('Username already exists');
+        throw new ConflictException('Username/email Id already exists');
       } else {
         throw error;
       }
@@ -35,8 +45,6 @@ export class UsersService {
     if (!updateUserDto.userId || updateUserDto.userId == undefined) return;
 
     try {
-      console.log('updateUserDto.password', updateUserDto.password);
-
       if (updateUserDto.password) {
         // for update password only
         console.log('updateUserDto.password save method');
@@ -44,6 +52,11 @@ export class UsersService {
         um.password = updateUserDto.password;
         return um.save();
       } else {
+        // converting jsonstring to jsonObject
+        if (updateUserDto.socialProfile != null) {
+          updateUserDto.socialProfile = JSON.parse(updateUserDto.socialProfile);
+        }
+
         return await this.userModel.updateOne(
           { _id: updateUserDto.userId },
           updateUserDto,

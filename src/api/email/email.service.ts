@@ -31,10 +31,9 @@ export class MailerService {
 
     // send the email using nodemailer
     return await this.transporter.sendMail({
-      from: 'info@maxbbps.com',
+      from: process.env.MAILER_FROM_EMAIL,
       to,
       subject,
-      text: 'This is a test email from NestJS',
       html,
     });
   }

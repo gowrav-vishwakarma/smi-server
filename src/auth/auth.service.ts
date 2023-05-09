@@ -19,13 +19,25 @@ export class AuthService {
     return this.usersService.createUser(registerUserDto);
   }
 
+  /**
+   * login work with both password and token
+   */
   async loginUser(loginUserDTO: LoginUserDTO): Promise<LoginResponseDTO> {
-    const { username, password } = loginUserDTO;
-
+    const { username, password, token } = loginUserDTO;
     const user = await this.usersService.findUserByUsername(username);
-    if (!user || !bcrypt.compareSync(password, user.password)) {
+
+    let data = user.password;
+    let hash = password;
+
+    if (token != undefined && token != 'undefined') {
+      hash = user.authOTP;
+      data = token;
+    }
+
+    if (!user || !bcrypt.compareSync(hash, data)) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
     const payload: JwtPayload = { _id: user._id, username: user.username };
     const accessToken = this.JwtService.sign(payload);
 
@@ -50,4 +62,76 @@ export class AuthService {
   //     }
   //     return null;
   //   }
+
+  async verifyUser(verifyUserPayload: {
+    username: string;
+    authtoken: string;
+  }): Promise<LoginResponseDTO> {
+    const user = await this.usersService.findUserByUsername(
+      verifyUserPayload.username,
+    );
+    if (!user || user.authToken != verifyUserPayload.authtoken) {
+      throw new UnauthorizedException('Invalid otp');
+    }
+    if (
+      !user ||
+      !bcrypt.compareSync(user.authOTP, verifyUserPayload.authtoken)
+    ) {
+      throw new UnauthorizedException('Invalid otp');
+    }
+
+    this.usersService.updateUser({
+      userId: user._id,
+      status: 'ACTIVE',
+      authToken: null,
+    });
+
+    const payload: JwtPayload = { _id: user._id, username: user.username };
+    const accessToken = this.JwtService.sign(payload);
+
+    return {
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        userToppics: user.topicsInterestedIn,
+        userLanguages: user.languagesSpeaks,
+        onlineStatus: user.onlineStatus,
+      },
+      accessToken,
+    };
+  }
+
+  async verifyUserOTP(verifyUserPayload: {
+    username: string;
+    code: string;
+  }): Promise<LoginResponseDTO> {
+    const user = await this.usersService.findUserByUsername(
+      verifyUserPayload.username,
+    );
+    if (!user || user.authOTP != verifyUserPayload.code) {
+      throw new UnauthorizedException('Invalid otp');
+    }
+
+    this.usersService.updateUser({
+      userId: user._id,
+      status: 'ACTIVE',
+      authToken: null,
+    });
+
+    const payload: JwtPayload = { _id: user._id, username: user.username };
+    const accessToken = this.JwtService.sign(payload);
+
+    return {
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        userToppics: user.topicsInterestedIn,
+        userLanguages: user.languagesSpeaks,
+        onlineStatus: user.onlineStatus,
+      },
+      accessToken,
+    };
+  }
 }
