@@ -36,32 +36,32 @@ export class GetQuestionsDTO {
   @IsOptional()
   @ApiPropertyOptional({ default: null })
   @IsBoolean()
-  @Transform(({ obj, key }) => obj[key] === 'true')
+  // @Transform(({ obj, key }) => obj[key] === 'true')
   // @Type(() => Boolean)
   hasComments: boolean;
 
   @IsOptional()
   @ApiPropertyOptional({ default: null })
   @IsBoolean()
-  @Transform(({ obj, key }) => obj[key] === 'true')
+  // @Transform(({ obj, key }) => obj[key] === 'true')
   availableOnChatChannel: boolean;
 
   @IsOptional()
   @IsBoolean()
   @ApiPropertyOptional({ default: null })
-  @Transform(({ obj, key }) => obj[key] === 'true')
+  // @Transform(({ obj, key }) => obj[key] === 'true')
   availableOnScreenShare: boolean;
 
   @IsOptional()
   @ApiPropertyOptional({ default: null })
   @IsBoolean()
-  @Transform(({ obj, key }) => obj[key] === 'true')
+  // @Transform(({ obj, key }) => obj[key] === 'true')
   availableOnVideoCall: boolean;
 
   @IsOptional()
   @IsBoolean()
   @ApiPropertyOptional({ default: null })
-  @Transform(({ obj, key }) => obj[key] === 'true')
+  // @Transform(({ obj, key }) => obj[key] === 'true')
   availableOnAudioCall: boolean;
 
   @IsOptional()
