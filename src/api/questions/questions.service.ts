@@ -70,12 +70,10 @@ export class QuestionsService {
     if (filterOptions.availableOnChatChannel) {
       matchCondition['solutionChannels.chat'] = true;
     }
-    if (
-      filterOptions.availableOnScreenShare == true ||
-      filterOptions.availableOnScreenShare
-    ) {
+    if (filterOptions.availableOnScreenShare) {
       matchCondition['solutionChannels.screenShare'] = true;
     }
+
     if (filterOptions.availableOnVideoCall) {
       matchCondition['solutionChannels.videoCall'] = true;
     }
