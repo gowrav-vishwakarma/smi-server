@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { pipe } from 'rxjs';
+import { filter, pipe } from 'rxjs';
 import { CreateQuestionDTO } from '../dto/create-question.dto';
 import { GetQuestionsDTO } from '../dto/question-filter-query.dto';
 import { QuestionOfferSolutionDTO } from '../dto/question-offersolution.dto';
@@ -50,13 +50,34 @@ export class QuestionsService {
       };
     }
 
-    if (filterOptions.topics) {
+    if (filterOptions.topics && filterOptions.topics.length > 0) {
       matchCondition['topic'] = { $in: filterOptions.topics };
     }
 
     if (filterOptions.tags && filterOptions.tags.length) {
       matchCondition['tags'] = { $in: filterOptions.tags };
     }
+
+    //  todo not saving languag in question
+    if (filterOptions.languages && filterOptions.languages.length) {
+      matchCondition['languages'] = { $in: filterOptions.tags };
+    }
+
+    // solution channels
+    if (filterOptions.availableOnAudioCall) {
+      matchCondition['solutionChannels.audioCall'] = true;
+    }
+    if (filterOptions.availableOnChatChannel) {
+      matchCondition['solutionChannels.chat'] = true;
+    }
+    if (filterOptions.availableOnScreenShare) {
+      matchCondition['solutionChannels.screenShare'] = true;
+    }
+
+    if (filterOptions.availableOnVideoCall) {
+      matchCondition['solutionChannels.videoCall'] = true;
+    }
+    // end --- solution channels
 
     if (filterMyQuestionsOnly) {
       matchCondition['questionerId'] = user._id;

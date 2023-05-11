@@ -63,16 +63,18 @@ export class UsersController {
      * @UploadedFile() files: Array<Express.Multer.File>,
      */
   ) {
-    for (let index = 0; index < files.length; index++) {
-      const file = files[index];
-      const mediaRes = await this.mediaService.createMedia(
-        file,
-        `Profile/${user.userId}/${
-          file.originalname + '.' + file.mimetype.split('/')[1]
-        }`,
-      );
+    if (files) {
+      for (let index = 0; index < files.length; index++) {
+        const file = files[index];
+        const mediaRes = await this.mediaService.createMedia(
+          file,
+          `Profile/${user.userId}/${
+            file.originalname + '.' + file.mimetype.split('/')[1]
+          }`,
+        );
 
-      user[file.originalname] = mediaRes['key'];
+        user[file.originalname] = mediaRes['key'];
+      }
     }
 
     return this.usersService.updateUser(user);

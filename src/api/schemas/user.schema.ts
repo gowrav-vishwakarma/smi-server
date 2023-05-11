@@ -308,8 +308,8 @@ UserSchema.pre<UserDocument>('save', function (next) {
   }
 
   if (this.status == 'REGISTERED') {
-    this.authOTP =
-      '' + Math.abs(Math.floor(Math.random() * (111111 - 999999) + 111111));
+    this.authOTP = '' + Math.floor(100000 + Math.random() * 900000);
+    // '' + Math.abs(Math.floor(Math.random() * (111111 - 999999) + 111111));
     this.authToken = bcrypt.hashSync(this.authOTP, 8);
   }
 
