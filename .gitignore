@@ -39,3 +39,7 @@ lerna-debug.log*
 .htaccess
 
 tmp/**
+
+.ftpquota
+
+.vscode
