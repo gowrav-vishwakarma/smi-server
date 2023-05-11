@@ -5,6 +5,12 @@ import { User } from 'src/api/schemas/user.schema';
 
 export type QuestionDocument = Question & Document;
 
+export enum QuestionScope {
+  Private = 'Private',
+  Public = 'Public',
+  Organization = 'Organization',
+}
+
 export enum QuestionStatus {
   OPEN = 'OPEN',
   CLOSED = 'CLOSED',
@@ -80,6 +86,13 @@ export class Question {
     default: QuestionStatus.OPEN,
   })
   status: string;
+
+  @Prop({
+    required: true,
+    enum: QuestionScope,
+    default: QuestionScope.Public,
+  })
+  scope: string;
 
   @Prop(raw({ type: solutionChannels, default: solutionChannelsDefaults }))
   solutionChannels: Record<string, any>;

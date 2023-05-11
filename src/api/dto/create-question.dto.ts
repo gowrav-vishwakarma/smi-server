@@ -86,4 +86,8 @@ export class CreateQuestionDTO {
   @IsOptional()
   @ApiPropertyOptional({ type: String, format: 'binary' })
   video: string;
+
+  @IsString()
+  @ApiProperty({ default: 'Public' })
+  scope: string;
 }
