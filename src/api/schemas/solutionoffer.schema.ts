@@ -59,5 +59,5 @@ export class SolutionOffer {
 }
 
 const SolutionOfferSchema = SchemaFactory.createForClass(SolutionOffer);
-SolutionOfferSchema.index({ offererId: 1, questionerId: 1 }, { unique: true });
+SolutionOfferSchema.index({ offererId: 1, questionId: 1 }, { unique: true });
 export { SolutionOfferSchema };
