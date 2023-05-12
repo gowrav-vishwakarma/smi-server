@@ -42,7 +42,8 @@ export class QuestionsService {
     const { page = 1, sort = false } = filterOptions;
     const matchCondition = {};
 
-    matchCondition['scope'] = 'Public';
+    // for global product
+    if (!filterMyQuestionsOnly) matchCondition['scope'] = 'Public';
 
     if (filterOptions.query) {
       const searchRegex = new RegExp('.*' + filterOptions.query + '.*', 'i');
