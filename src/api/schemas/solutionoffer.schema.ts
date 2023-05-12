@@ -58,4 +58,6 @@ export class SolutionOffer {
   offerValue: Record<string, any>;
 }
 
-export const SolutionOfferSchema = SchemaFactory.createForClass(SolutionOffer);
+const SolutionOfferSchema = SchemaFactory.createForClass(SolutionOffer);
+SolutionOfferSchema.index({ offererId: 1, questionerId: 1 }, { unique: true });
+export { SolutionOfferSchema };

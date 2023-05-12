@@ -130,7 +130,7 @@ export class QuestionsService {
               },
             },
             {
-              $project: { notes: 1, _id: 0 },
+              $project: { notes: 1, solutionChannel: 1, _id: 0 },
             },
           ],
         },
@@ -230,7 +230,7 @@ export class QuestionsService {
               },
             },
             {
-              $project: { notes: 1, _id: 0 },
+              $project: { notes: 1, solutionChannel: 1, createdAt: 1, _id: 0 },
             },
           ],
         },
