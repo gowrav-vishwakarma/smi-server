@@ -54,7 +54,12 @@ export class QuestionsService {
     }
 
     if (filterOptions.topics && filterOptions.topics.length > 0) {
-      matchCondition['topic'] = { $in: filterOptions.topics };
+      let topicChunks = filterOptions.topics.map((topic) => {
+        let chunks = topic.split('/');
+        return chunks[chunks.length - 1]; // return the last chunk
+      });
+
+      matchCondition['topic'] = { $in: topicChunks };
     }
 
     if (filterOptions.tags && filterOptions.tags.length) {

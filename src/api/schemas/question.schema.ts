@@ -66,7 +66,7 @@ const solutionChannelsDefaults = {
 @Schema()
 export class Question {
   @Prop({ required: true })
-  topic: string;
+  topic: string[];
 
   @Prop({ required: true })
   title: string;

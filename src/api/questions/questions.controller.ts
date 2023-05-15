@@ -90,9 +90,13 @@ export class QuestionsController {
     @Body() question: CreateQuestionDTO,
     @UploadedFile() video: Express.Multer.File,
   ) {
+    const topic = Array.isArray(question.topic)
+      ? question.topic[0]
+      : question.topic.split('/');
     const questionData = {
       ...question,
       questionerId: user._id,
+      topic: topic,
       // video: video ? video.originalname : null,
     };
 

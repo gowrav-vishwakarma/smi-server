@@ -38,7 +38,7 @@ export class CreateQuestionDTO {
   //   if (typeof obj[key] === 'string') return obj[key]?.split(',');
   //   return obj[key];
   // })
-  topic: string;
+  topic: string | string[];
 
   @IsString()
   @ApiProperty({ default: 'Question title here' })
