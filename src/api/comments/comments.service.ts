@@ -91,7 +91,16 @@ export class CommentsService {
   }
 
   async getAllMyComments(user: UserDocument): Promise<any> {
-    return await this.commentModel.find({
+    return await this.commentModel
+      .find({
+        commenterId: user._id,
+      })
+      .populate('questionId');
+  }
+
+  async deleteComment(id: string, user: UserDocument): Promise<any> {
+    return await this.commentModel.deleteOne({
+      _id: id,
       commenterId: user._id,
     });
   }

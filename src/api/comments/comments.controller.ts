@@ -45,5 +45,11 @@ export class CommentsController {
   async getAllMyComments(@GetUser() user: UserDocument) {
     return this.commentsService.getAllMyComments(user);
   }
-  
+
+  @Get('delete-comment/:id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  async deleteComment(@GetUser() user: UserDocument, @Param('id') id: string) {
+    return this.commentsService.deleteComment(id, user);
+  }
 }

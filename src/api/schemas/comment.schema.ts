@@ -33,17 +33,21 @@ export class Comment {
   @Prop({ required: true, default: Date.now() })
   createdAt: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Question',
+  })
   questionId: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Question' })
-  question: Question;
+  // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Question' })
+  // question: Question;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })
   commenterId: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  commenter: User;
+  // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  // commenter: User;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
