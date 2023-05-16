@@ -30,20 +30,40 @@ export class OffersService {
     });
   }
 
-  async getUnreadOffers(countOnly: boolean, user: UserDocument): Promise<any> {
+  async getUnreadOffers(
+    countOnly: boolean,
+    showReadOffers: boolean,
+    user: UserDocument,
+  ): Promise<any> {
     if (countOnly) {
       return await this.solutionOfferModel.countDocuments({
         questionerId: user._id,
-        isRead: false,
+        isRead: showReadOffers,
       });
     } else {
       return await this.solutionOfferModel
         .find({
           questionerId: user._id,
-          isRead: false,
+          isRead: showReadOffers,
         })
         .populate('questionId') // Populate the question field
         .populate('offererId', '-password'); // Populate the offererId field and exclude the password field
     }
+  }
+
+  async markOfferRead(
+    offerId: string,
+    readStatus: boolean,
+    user: UserDocument,
+  ): Promise<any> {
+    return await this.solutionOfferModel.updateOne(
+      {
+        _id: offerId,
+        questionerId: user._id,
+      },
+      {
+        isRead: readStatus,
+      },
+    );
   }
 }

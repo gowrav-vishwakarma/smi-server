@@ -43,13 +43,25 @@ export class OffersController {
     return this.offersService.removeSolutionOffer(id, user);
   }
 
-  @Get('/unread/:countOnly')
+  @Get('/unread/:countOnly/:showReadOffers')
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   getUnreadOffers(
     @Param('countOnly') countOnly: boolean,
+    @Param('showReadOffers') showReadOffers: boolean,
     @GetUser() user: UserDocument,
   ): Promise<any> {
-    return this.offersService.getUnreadOffers(countOnly, user);
+    return this.offersService.getUnreadOffers(countOnly, showReadOffers, user);
+  }
+
+  @Get('/markread/:offerId/:readStatus')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  markOfferRead(
+    @Param('offerId') offerId: string,
+    @Param('readStatus') readStatus: boolean,
+    @GetUser() user: UserDocument,
+  ): Promise<any> {
+    return this.offersService.markOfferRead(offerId, readStatus, user);
   }
 }
