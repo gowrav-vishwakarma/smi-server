@@ -1,7 +1,6 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
-import { Question } from 'src/api/schemas/question.schema';
 
 export type SolutionOfferDocument = SolutionOffer & Document;
 
@@ -54,6 +53,9 @@ export class SolutionOffer {
 
   @Prop({ required: true })
   solutionChannel: [];
+
+  @Prop({ required: true, default: false })
+  isRead: boolean;
 
   @Prop({ required: true, default: Date.now() })
   createdAt: Date;

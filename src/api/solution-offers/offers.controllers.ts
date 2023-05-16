@@ -42,4 +42,14 @@ export class OffersController {
   ): Promise<any> {
     return this.offersService.removeSolutionOffer(id, user);
   }
+
+  @Get('/unread/:countOnly')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  getUnreadOffers(
+    @Param('countOnly') countOnly: boolean,
+    @GetUser() user: UserDocument,
+  ): Promise<any> {
+    return this.offersService.getUnreadOffers(countOnly, user);
+  }
 }

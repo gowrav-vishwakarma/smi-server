@@ -29,4 +29,21 @@ export class OffersService {
       offererId: user._id,
     });
   }
+
+  async getUnreadOffers(countOnly: boolean, user: UserDocument): Promise<any> {
+    if (countOnly) {
+      return await this.solutionOfferModel.countDocuments({
+        questionerId: user._id,
+        isRead: false,
+      });
+    } else {
+      return await this.solutionOfferModel
+        .find({
+          questionerId: user._id,
+          isRead: false,
+        })
+        .populate('questionId') // Populate the question field
+        .populate('offererId', '-password'); // Populate the offererId field and exclude the password field
+    }
+  }
 }
