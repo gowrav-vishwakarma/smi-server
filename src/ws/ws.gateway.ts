@@ -225,4 +225,17 @@ export class WsGateway
       }
     }
   }
+
+  @SubscribeMessage('OfferPlaced')
+  async handleOfferPlaced(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: any,
+  ): Promise<any> {
+    console.log('OfferPlaced', payload);
+    // todo check if user is online
+    let onlineUser = this.getConnectedClientIdByUserId([payload.to]);
+    if (onlineUser.length) {
+      this.server.to(onlineUser[0]).emit('OfferPlaced', payload);
+    }
+  }
 }
