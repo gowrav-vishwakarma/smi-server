@@ -38,12 +38,15 @@ export class QuestionsService {
     filterOptions: GetQuestionsDTO,
     user?: any,
     filterMyQuestionsOnly: boolean = false,
+    showOnlyOpen: boolean = false,
   ): Promise<QuestionDocument[] | any> {
     const { page = 1, sort = false } = filterOptions;
     const matchCondition = {};
 
     // for global product
     if (!filterMyQuestionsOnly) matchCondition['scope'] = 'Public';
+
+    if (showOnlyOpen) matchCondition['status'] = 'OPEN';
 
     if (filterOptions.query) {
       const searchRegex = new RegExp('.*' + filterOptions.query + '.*', 'i');
@@ -428,5 +431,17 @@ export class QuestionsService {
         video: videoS3Path,
       },
     );
+  }
+
+  async closeQuestion(qId: string, user: UserDocument): Promise<any> {
+    // change question status to CLOSE
+    const question = await this.questionModel.findOneAndUpdate(
+      { _id: qId, questionerId: user._id },
+      { status: 'Closed' },
+    );
+
+    if (!question) {
+      throw new NotFoundException('Question not found');
+    }
   }
 }

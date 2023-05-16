@@ -46,15 +46,22 @@ export class QuestionsController {
     return this.questionsService.searchQuestions(filterOptions, user);
   }
 
-  @Get('/my-questions')
+  @Get('/my-questions/:showOnlyOpen')
   @UsePipes(ValidationPipe)
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   getMyQuestions(
     @GetUser() user: UserDocument,
     @Query() filterOptions: GetQuestionsDTO,
+    @Param('showOnlyOpen') showOnlyOpen: boolean,
   ): QuestionDocument[] | any {
-    return this.questionsService.searchQuestions(filterOptions, user, true);
+    console.log('showOnlyOpen', showOnlyOpen);
+    return this.questionsService.searchQuestions(
+      filterOptions,
+      user,
+      true,
+      showOnlyOpen,
+    );
   }
 
   @Get(':id')
@@ -135,5 +142,16 @@ export class QuestionsController {
     @Body() offer: QuestionOfferSolutionDTO,
   ) {
     return this.questionsService.offerSolution(offer, user);
+  }
+
+  @Get('/close/:questionId')
+  @UsePipes(ValidationPipe)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  async closeQuestion(
+    @GetUser() user: UserDocument,
+    @Param('questionId') questionId: string,
+  ) {
+    return this.questionsService.closeQuestion(questionId, user);
   }
 }

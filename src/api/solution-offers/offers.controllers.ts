@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -30,5 +31,15 @@ export class OffersController {
     @GetUser() user: UserDocument,
   ): Promise<SolutionOfferDocument[]> {
     return this.offersService.getAllSolutions(user);
+  }
+
+  @Delete('remove-solution-offer/:id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  removeSolutionOffer(
+    @Param('id') id: string,
+    @GetUser() user: UserDocument,
+  ): Promise<any> {
+    return this.offersService.removeSolutionOffer(id, user);
   }
 }

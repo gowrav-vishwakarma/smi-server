@@ -33,11 +33,15 @@ const offerValueDefault = {
 
 @Schema()
 export class SolutionOffer {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Question',
+  })
   questionId: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Question' })
-  question: Question;
+  // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Question' })
+  // question: Question;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })
   questionerId: string;

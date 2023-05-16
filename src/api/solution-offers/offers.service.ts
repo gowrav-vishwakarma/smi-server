@@ -15,7 +15,17 @@ export class OffersService {
   ) {}
 
   async getAllSolutions(user: UserDocument): Promise<SolutionOfferDocument[]> {
-    return await this.solutionOfferModel.find({
+    return await this.solutionOfferModel
+      .find({
+        offererId: user._id,
+      })
+      .populate('questionId') // Populate the question field
+      .populate('questionerId', '-password'); // Populate the questionerId field and exclude the password field
+  }
+
+  async removeSolutionOffer(id: string, user: UserDocument): Promise<any> {
+    return await this.solutionOfferModel.deleteOne({
+      _id: id,
       offererId: user._id,
     });
   }
