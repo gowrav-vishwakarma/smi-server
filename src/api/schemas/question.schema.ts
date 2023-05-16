@@ -77,6 +77,9 @@ export class Question {
   @Prop({ required: true })
   tags: string[];
 
+  @Prop({ required: true })
+  languages: string[];
+
   @Prop({ required: false })
   video: string;
 

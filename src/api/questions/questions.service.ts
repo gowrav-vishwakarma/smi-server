@@ -71,7 +71,7 @@ export class QuestionsService {
 
     //  todo not saving languag in question
     if (filterOptions.languages && filterOptions.languages.length) {
-      matchCondition['languages'] = { $in: filterOptions.tags };
+      matchCondition['languages'] = { $in: filterOptions.languages };
     }
 
     // solution channels

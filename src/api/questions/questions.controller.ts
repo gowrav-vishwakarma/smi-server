@@ -100,6 +100,7 @@ export class QuestionsController {
     const topic = Array.isArray(question.topic)
       ? question.topic[0]
       : question.topic.split('/');
+
     const questionData = {
       ...question,
       questionerId: user._id,
