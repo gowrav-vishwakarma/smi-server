@@ -293,6 +293,9 @@ export class User {
   jobType: string;
 
   @Prop({ type: String })
+  companyName: string;
+
+  @Prop({ type: String })
   authOTP: string;
 
   @Prop({ type: String })
