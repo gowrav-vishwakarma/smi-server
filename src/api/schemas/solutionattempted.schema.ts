@@ -9,6 +9,7 @@ export enum SolutionAttemptedStatus {
   ATTEMPTED = 'ATTEMPTED',
   ACCEPTED = 'ACCEPTED',
   REJECTED = 'REJECTED',
+  SOLVED = 'SOLVED',
 }
 
 @Schema()

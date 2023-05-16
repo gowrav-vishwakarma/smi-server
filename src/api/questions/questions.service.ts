@@ -44,9 +44,13 @@ export class QuestionsService {
     const matchCondition = {};
 
     // for global product
-    if (!filterMyQuestionsOnly) matchCondition['scope'] = 'Public';
+    if (!filterMyQuestionsOnly) {
+      matchCondition['scope'] = 'Public';
+      matchCondition['status'] = 'OPEN';
+    }
 
-    if (showOnlyOpen) matchCondition['status'] = 'OPEN';
+    if (filterMyQuestionsOnly && showOnlyOpen)
+      matchCondition['status'] = 'OPEN';
 
     if (filterOptions.query) {
       const searchRegex = new RegExp('.*' + filterOptions.query + '.*', 'i');
@@ -293,7 +297,26 @@ export class QuestionsService {
           as: 'Offerer',
           pipeline: [
             {
-              $project: { name: 1, ratingAsSolver: 1, post: 1 },
+              $project: {
+                name: 1,
+                ratingAsSolver: 1,
+                post: 1,
+              },
+            },
+            {
+              $lookup: {
+                from: 'solutionattempteds',
+                localField: '_id',
+                foreignField: 'offererId',
+                as: 'solutionAttempted',
+                pipeline: [
+                  {
+                    $match: {
+                      questionId: ObjectId(questionId),
+                    },
+                  },
+                ],
+              },
             },
           ],
         },

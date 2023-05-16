@@ -10,6 +10,11 @@ import {
   SolutionAttemptedStatus,
 } from '../schemas/solutionattempted.schema';
 import { User, UserDocument } from '../schemas/user.schema';
+import {
+  Question,
+  QuestionDocument,
+  QuestionStatus,
+} from '../schemas/question.schema';
 
 @Injectable()
 export class SolutionAttemptService {
@@ -18,6 +23,8 @@ export class SolutionAttemptService {
     private readonly solutionAttemptedModel: Model<SolutionAttemptedDocument>,
 
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Question.name)
+    private readonly questionModel: Model<QuestionDocument>,
   ) {}
 
   async createAttempt(
@@ -47,63 +54,61 @@ export class SolutionAttemptService {
   }
 
   async createRating(ratingParams: CreateSolutionRatingDTO): Promise<any> {
-    console.log('ratingParams', ratingParams);
+    let userUpdate: any = {};
+    let solutionUpdate: any = {};
 
     if (ratingParams.forOfferer && !ratingParams.forQuestioner) {
-      await this.userModel.updateOne(
-        { _id: ratingParams.offererId },
-        {
-          $inc: {
-            'ratingAsSolver.totalOfferingCount': 1,
-            'ratingAsSolver.totalRatingCount': 1,
-            'ratingAsSolver.totalRatingSum': ratingParams.rating,
-            'ratingAsSolver.totalAcceptedCount': 1,
-          },
+      userUpdate = {
+        $inc: {
+          'ratingAsSolver.totalOfferingCount': 1,
+          'ratingAsSolver.totalRatingCount': 1,
+          'ratingAsSolver.totalRatingSum': ratingParams.rating,
+          'ratingAsSolver.totalAcceptedCount': ratingParams.markedSolved
+            ? 1
+            : 0,
         },
-      );
+      };
 
-      return await this.solutionAttemptedModel.updateOne(
-        {
-          questionId: ratingParams.questionId,
-          offererId: ratingParams.offererId,
-          questionerId: ratingParams.questionerId,
-          _id: ratingParams.solutionAttemptId,
-        },
-        {
-          ratingForSolver: ratingParams.rating,
-          ratingCommentForSolver: ratingParams.comment,
-        },
-      );
+      solutionUpdate = {
+        ratingForSolver: ratingParams.rating,
+        ratingCommentForSolver: ratingParams.comment,
+      };
     } else {
-      await this.userModel.updateOne(
-        { _id: ratingParams.questionerId },
+      userUpdate = {
+        $inc: {
+          'reputationAsQuestioner.totalMarkedSolved': ratingParams.markedSolved
+            ? 1
+            : 0,
+          'reputationAsQuestioner.totalRatingsCount': 1,
+          'reputationAsQuestioner.totalRatingsSum': ratingParams.rating,
+        },
+      };
+
+      await this.questionModel.updateOne(
+        { _id: ratingParams.questionId },
         {
-          $inc: {
-            'reputationAsQuestioner.totalMarkedSolved':
-              ratingParams.markedSolved ? 1 : 0,
-            'reputationAsQuestioner.totalRatingsCount': 1,
-            'reputationAsQuestioner.totalRatingsSum': ratingParams.rating,
-          },
+          status: QuestionStatus.SOLVED,
         },
       );
 
-      return await this.solutionAttemptedModel.updateOne(
-        {
-          questionId: ratingParams.questionId,
-          offererId: ratingParams.offererId,
-          questionerId: ratingParams.questionerId,
-          _id: ratingParams.solutionAttemptId,
-        },
-        {
-          ratingForQuestioner: ratingParams.rating,
-          ratingCommentForQuestioner: ratingParams.comment,
-        },
-      );
+      solutionUpdate = {
+        ratingForQuestioner: ratingParams.rating,
+        ratingCommentForQuestioner: ratingParams.comment,
+        status: SolutionAttemptedStatus.SOLVED,
+      };
     }
 
-    // return await this.solutionAttemptedModel.findById(
-    //   ratingParams.solutionAttemptId,
-    // );
+    await this.userModel.updateOne({ _id: ratingParams.offererId }, userUpdate);
+
+    return await this.solutionAttemptedModel.updateOne(
+      {
+        questionId: ratingParams.questionId,
+        offererId: ratingParams.offererId,
+        questionerId: ratingParams.questionerId,
+        _id: ratingParams.solutionAttemptId,
+      },
+      solutionUpdate,
+    );
   }
 
   async detail(id: string): Promise<SolutionAttemptedDocument> {
