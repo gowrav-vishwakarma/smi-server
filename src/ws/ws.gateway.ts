@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import {
   ConnectedSocket,
@@ -20,7 +20,11 @@ import {
   SolutionAttemptedDocument,
   SolutionAttemptedStatus,
 } from '../api/schemas/solutionattempted.schema';
-import { User, UserDocument } from '../api/schemas/user.schema';
+import {
+  User,
+  UserDocument,
+  UserOnlineStatus,
+} from '../api/schemas/user.schema';
 
 @WebSocketGateway({ cors: true })
 export class WsGateway
@@ -41,7 +45,7 @@ export class WsGateway
     this.logger.log('WS Initialized');
   }
 
-  handleConnection(@ConnectedSocket() client: Socket): void {
+  async handleConnection(@ConnectedSocket() client: Socket): Promise<void> {
     this.logger.log(`WS Client connected: ${client.id}`);
     client.join(client.handshake.auth.username);
 
@@ -52,19 +56,37 @@ export class WsGateway
       this.connectedClients[client.handshake.auth.username],
     );
 
+    // update user status online
+    await this.userModel.updateOne(
+      {
+        _id: new Types.ObjectId(client.handshake.auth.username),
+      },
+      {
+        onlineStatus: UserOnlineStatus.ONLINE,
+      },
+    );
+
     client.emit('session', {
       username: client.handshake.auth.username,
     });
-
-    // update user status online
   }
 
   handleDisconnect(client: Socket) {
     this.connectedClients.delete(client.id);
+    // update user status offline
+    this.userModel.updateOne(
+      {
+        _id: new Types.ObjectId(client.handshake.auth.username),
+      },
+      {
+        onlineStatus: UserOnlineStatus.OFFLINE,
+      },
+    );
+
     console.log(
       'Client disconnected:',
       client.id,
-      this.connectedClients[client.id],
+      this.connectedClients.get(client.id),
     );
   }
 
@@ -157,52 +179,52 @@ export class WsGateway
     this.server.to(payload.to).emit('callDenied', payload);
   }
 
-  @SubscribeMessage('RtcOffer')
-  handleRtcOffer(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: any,
-  ): void {
-    console.log('RtcOffer', payload);
-    payload.connectionId = client.id;
-    this.server.to(payload.to).emit('RtcOffer', payload);
-  }
+  // @SubscribeMessage('RtcOffer')
+  // handleRtcOffer(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() payload: any,
+  // ): void {
+  //   console.log('RtcOffer', payload);
+  //   payload.connectionId = client.id;
+  //   this.server.to(payload.to).emit('RtcOffer', payload);
+  // }
 
-  @SubscribeMessage('RtcAnswer')
-  handleRtcAnswerData(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: any,
-  ): void {
-    payload.connectionId = client.id;
-    console.log('RTC Answer', payload);
-    this.server.to(payload.to).emit('RtcAnswer', payload);
-  }
+  // @SubscribeMessage('RtcAnswer')
+  // handleRtcAnswerData(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() payload: any,
+  // ): void {
+  //   payload.connectionId = client.id;
+  //   console.log('RTC Answer', payload);
+  //   this.server.to(payload.to).emit('RtcAnswer', payload);
+  // }
 
-  @SubscribeMessage('RtcCandidate')
-  handleRtcCandidateData(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: any,
-  ): void {
-    console.log('Rtccandidate', payload);
-    this.server.to(payload.to).emit('RtcCandidate', client.id, payload);
-  }
+  // @SubscribeMessage('RtcCandidate')
+  // handleRtcCandidateData(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() payload: any,
+  // ): void {
+  //   console.log('Rtccandidate', payload);
+  //   this.server.to(payload.to).emit('RtcCandidate', client.id, payload);
+  // }
 
-  @SubscribeMessage('RtcDisconnect')
-  handleRtcDisconnectData(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: any,
-  ): void {
-    console.log('RtcDisconnect', payload);
-    this.server.to(payload.to).emit('RtcDisconnect', client.id, payload);
-  }
+  // @SubscribeMessage('RtcDisconnect')
+  // handleRtcDisconnectData(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() payload: any,
+  // ): void {
+  //   console.log('RtcDisconnect', payload);
+  //   this.server.to(payload.to).emit('RtcDisconnect', client.id, payload);
+  // }
 
-  @SubscribeMessage('RtcStream')
-  handleRtcStreamData(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: any,
-  ): void {
-    console.log('RtcStream', payload);
-    // this.server.to(payload.to).emit('RtcDisconnect', client.id, payload);
-  }
+  // @SubscribeMessage('RtcStream')
+  // handleRtcStreamData(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() payload: any,
+  // ): void {
+  //   console.log('RtcStream', payload);
+  //   // this.server.to(payload.to).emit('RtcDisconnect', client.id, payload);
+  // }
 
   @SubscribeMessage('checkUserConnected')
   handleCheckUserConnected(
