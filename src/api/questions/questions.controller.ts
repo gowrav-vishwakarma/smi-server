@@ -100,14 +100,14 @@ export class QuestionsController {
     @UploadedFile() video: Express.Multer.File,
   ) {
     const askTo = question.askTo ? question.askTo : null;
-    const topic = Array.isArray(question.topic)
-      ? question.topic[0]
-      : question.topic.split('/');
+    // const topic = Array.isArray(question.topic)
+    //   ? question.topic[0]
+    //   : question.topic.split('/');
 
     const questionData = {
       ...question,
       questionerId: user._id,
-      topic: topic,
+      // topic: topic,
       askTo: undefined,
       // video: video ? video.originalname : null,
     };
