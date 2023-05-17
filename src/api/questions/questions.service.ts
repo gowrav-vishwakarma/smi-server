@@ -345,7 +345,7 @@ export class QuestionsService {
         as: 'User',
         pipeline: [
           {
-            $project: { name: 1, ratingAsSolver: 1, _id: 0 },
+            $project: { name: 1, ratingAsSolver: 1 },
           },
         ],
       },
