@@ -238,4 +238,14 @@ export class WsGateway
       this.server.to(onlineUser[0]).emit('OfferPlaced', payload);
     }
   }
+
+  async questionAskedTo(
+    id: string,
+    askedBy: { name: string; title: string; topic: string; questionId: string },
+  ) {
+    let onlineUser = this.getConnectedClientIdByUserId([id]);
+    if (onlineUser.length) {
+      this.server.to(onlineUser[0]).emit('questionAskedTo', askedBy);
+    }
+  }
 }

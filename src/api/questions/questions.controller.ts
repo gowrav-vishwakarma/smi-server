@@ -21,11 +21,12 @@ import { GetQuestionsDTO } from '../dto/question-filter-query.dto';
 import { QuestionOfferSolutionDTO } from '../dto/question-offersolution.dto';
 import { VoteQuestionDTO } from '../dto/vote-question.dto';
 import { MediaService } from '../media/media.service';
-import { QuestionDocument } from '../schemas/question.schema';
+import { QuestionDocument, QuestionStatus } from '../schemas/question.schema';
 import { UserDocument } from '../schemas/user.schema';
 import { QuestionsService } from './questions.service';
 
 import { Express } from 'express';
+import { WsGateway } from 'src/ws/ws.gateway';
 
 @Controller('questions')
 @ApiTags('Questions')
@@ -33,6 +34,7 @@ export class QuestionsController {
   constructor(
     private readonly questionsService: QuestionsService,
     private readonly mediaService: MediaService,
+    private readonly wsGateway: WsGateway,
   ) {}
 
   @Post()
@@ -97,6 +99,7 @@ export class QuestionsController {
     @Body() question: CreateQuestionDTO,
     @UploadedFile() video: Express.Multer.File,
   ) {
+    const askTo = question.askTo ? question.askTo : null;
     const topic = Array.isArray(question.topic)
       ? question.topic[0]
       : question.topic.split('/');
@@ -105,6 +108,7 @@ export class QuestionsController {
       ...question,
       questionerId: user._id,
       topic: topic,
+      askTo: undefined,
       // video: video ? video.originalname : null,
     };
 
@@ -123,6 +127,26 @@ export class QuestionsController {
       );
       createdQuestion.video = mediaRes.Location;
     }
+
+    if (askTo) {
+      this.questionsService.offerSolution(
+        {
+          questionerId: user._id,
+          questionId: createdQuestion._id,
+          offererId: askTo,
+          notes: 'My default offer',
+          solutionChannel: [],
+        },
+        user,
+      );
+      this.wsGateway.questionAskedTo(askTo, {
+        name: user.name,
+        title: createdQuestion.title,
+        topic: createdQuestion.topic.join(','),
+        questionId: createdQuestion._id,
+      });
+    }
+
     return createdQuestion;
   }
 
@@ -145,14 +169,27 @@ export class QuestionsController {
     return this.questionsService.offerSolution(offer, user);
   }
 
-  @Get('/close/:questionId')
+  @Get('/change-status/:questionId/:status')
   @UsePipes(ValidationPipe)
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   async closeQuestion(
     @GetUser() user: UserDocument,
     @Param('questionId') questionId: string,
+    @Param('status') status: QuestionStatus,
   ) {
-    return this.questionsService.closeQuestion(questionId, user);
+    return this.questionsService.changeStatus(questionId, status, user);
+  }
+
+  @Get('/change-scope/:questionId/:scope')
+  @UsePipes(ValidationPipe)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  async changeScope(
+    @GetUser() user: UserDocument,
+    @Param('questionId') questionId: string,
+    @Param('scope') scope: string,
+  ) {
+    return this.questionsService.changeScope(questionId, scope, user);
   }
 }

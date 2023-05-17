@@ -7,7 +7,12 @@ import { GetQuestionsDTO } from '../dto/question-filter-query.dto';
 import { QuestionOfferSolutionDTO } from '../dto/question-offersolution.dto';
 import { VoteQuestionDTO } from '../dto/vote-question.dto';
 import { Comment } from '../schemas/comment.schema';
-import { Question, QuestionDocument } from '../schemas/question.schema';
+import {
+  Question,
+  QuestionDocument,
+  QuestionScope,
+  QuestionStatus,
+} from '../schemas/question.schema';
 import {
   SolutionOffer,
   SolutionOfferDocument,
@@ -437,7 +442,7 @@ export class QuestionsService {
     // intert into offers collection and increment question offer count
     const offerDetails = await this.offerModel.create({
       ...offer,
-      offererId: user._id,
+      offererId: offer.offererId ? offer.offererId : user._id,
     });
     await this.questionModel.updateOne(
       { _id: offer.questionId },
@@ -456,11 +461,31 @@ export class QuestionsService {
     );
   }
 
-  async closeQuestion(qId: string, user: UserDocument): Promise<any> {
+  async changeStatus(
+    qId: string,
+    status: QuestionStatus,
+    user: UserDocument,
+  ): Promise<any> {
     // change question status to CLOSE
     const question = await this.questionModel.findOneAndUpdate(
       { _id: qId, questionerId: user._id },
-      { status: 'Closed' },
+      { status: status },
+    );
+
+    if (!question) {
+      throw new NotFoundException('Question not found');
+    }
+  }
+
+  async changeScope(
+    qId: string,
+    scope: string,
+    user: UserDocument,
+  ): Promise<any> {
+    // change question scope
+    const question = await this.questionModel.findOneAndUpdate(
+      { _id: qId, questionerId: user._id },
+      { scope: scope },
     );
 
     if (!question) {

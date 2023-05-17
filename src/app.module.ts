@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -14,7 +14,7 @@ import { WsGateway } from './ws/ws.gateway';
     }),
     MongooseModule.forRoot(process.env.DATABASE),
     AuthModule,
-    ApiModule,
+    forwardRef(() => ApiModule),
   ],
   controllers: [AppController],
   providers: [AppService, WsGateway],

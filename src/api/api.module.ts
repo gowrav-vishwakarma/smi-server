@@ -25,6 +25,8 @@ import { TopicsController } from './topic/topics.controller';
 import { TopicsService } from './topic/topics.service';
 import { MailerController } from './email/email.controller';
 import { MailerService } from './email/email.service';
+import { WsGateway } from 'src/ws/ws.gateway';
+import { AppModule } from 'src/app.module';
 
 @Module({
   imports: [
@@ -38,6 +40,7 @@ import { MailerService } from './email/email.service';
       { name: 'Topic', schema: TopicSchema },
     ]),
     forwardRef(() => AuthModule),
+    forwardRef(() => AppModule),
     ConfigModule,
   ],
   controllers: [
@@ -59,6 +62,7 @@ import { MailerService } from './email/email.service';
     SolutionAttemptService,
     TopicsService,
     MailerService,
+    WsGateway,
   ],
   exports: [UsersService, MongooseModule, MailerService],
 })

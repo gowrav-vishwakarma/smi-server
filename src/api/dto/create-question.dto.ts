@@ -90,4 +90,8 @@ export class CreateQuestionDTO {
   @IsString()
   @ApiProperty({ default: 'Public' })
   scope: string;
+
+  @IsString()
+  @ApiProperty({ default: '' })
+  askTo: string;
 }

@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsMongoId,
   IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
@@ -29,4 +30,12 @@ export class QuestionOfferSolutionDTO {
     default: [],
   })
   solutionChannel: [];
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({
+    type: String,
+    default: '',
+  })
+  offererId?: string;
 }
