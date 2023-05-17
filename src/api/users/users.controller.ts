@@ -37,7 +37,6 @@ export class UsersController {
   async getProfile(@Param('id') id: string): Promise<UserDocument> {
     const user = await this.usersService.getUser(id, {
       password: 0,
-      _id: 0,
       __v: 0,
     });
     delete user.password;
