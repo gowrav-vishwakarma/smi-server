@@ -77,6 +77,7 @@ export class QuestionsService {
   ): Promise<QuestionDocument[] | any> {
     const { page = 1, sort = false } = filterOptions;
     const matchCondition = {};
+    const sortStage = { $sort: { createdAt: -1 } };
 
     // for global product
     if (!filterMyQuestionsOnly) {
@@ -134,6 +135,7 @@ export class QuestionsService {
     }
 
     const pipeline = [];
+    pipeline.push(sortStage);
     pipeline.push({ $match: matchCondition });
     if (user) {
       // Include my vode

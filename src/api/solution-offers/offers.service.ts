@@ -66,6 +66,7 @@ export class OffersService {
           questionerId: user._id,
           isRead: showReadOffers,
         })
+        .sort({ createdAt: -1 })
         .populate('questionId') // Populate the question field
         .populate('offererId', '-password'); // Populate the offererId field and exclude the password field
     }
