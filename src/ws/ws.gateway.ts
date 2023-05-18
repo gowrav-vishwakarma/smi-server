@@ -60,7 +60,6 @@ export class WsGateway
   }
 
   async handleDisconnect(client: Socket) {
-    this.connectedClients.delete(client.id);
     // update user status offline
     await this.userModel
       .updateOne(
@@ -74,6 +73,8 @@ export class WsGateway
       .catch((err) => {
         this.logger.error('Error while updating user status', err);
       });
+
+    this.connectedClients.delete(client.id);
 
     this.logger.log(
       'Client disconnected:',
