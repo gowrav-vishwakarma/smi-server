@@ -123,7 +123,7 @@ export class QuestionsController {
       );
       await this.questionsService.updateVideoURL(
         createdQuestion._id,
-        mediaRes.Location,
+        `nest-question/${createdQuestion._id}/video.webm`,
       );
       createdQuestion.video = mediaRes.Location;
     }
@@ -148,6 +148,17 @@ export class QuestionsController {
     }
 
     return createdQuestion;
+  }
+
+  @Get('/delete/:questionId')
+  @UsePipes(ValidationPipe)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  async deleteQuestion(
+    @GetUser() user: UserDocument,
+    @Param('questionId') questionId: string,
+  ) {
+    return this.questionsService.deleteQuestion(questionId, user);
   }
 
   @Get('/vote/:questionId/:vote')

@@ -17,8 +17,13 @@ import {
   SolutionOffer,
   SolutionOfferDocument,
 } from '../schemas/solutionoffer.schema';
-import { UserDocument } from '../schemas/user.schema';
+import { User, UserDocument } from '../schemas/user.schema';
 import { Vote, VoteDocument } from '../schemas/vote.schema';
+import {
+  SolutionAttempted,
+  SolutionAttemptedDocument,
+} from '../schemas/solutionattempted.schema';
+import { MediaService } from '../media/media.service';
 const ObjectId = require('mongoose').Types.ObjectId;
 
 @Injectable()
@@ -30,13 +35,38 @@ export class QuestionsService {
     private readonly voteModel: Model<VoteDocument>,
     @InjectModel(SolutionOffer.name)
     private readonly offerModel: Model<SolutionOfferDocument>,
+    @InjectModel(SolutionAttempted.name)
+    private readonly solutionAttemptedModel: Model<SolutionAttemptedDocument>,
     @InjectModel(Comment.name)
     private readonly commentModel: Model<Comment>,
+
+    private readonly mediaService: MediaService,
   ) {}
 
   async createQuestion(question: CreateQuestionDTO): Promise<QuestionDocument> {
     const createdQuestion = new this.questionModel(question);
     return await createdQuestion.save();
+  }
+
+  async deleteQuestion(id: string, user: UserDocument): Promise<any> {
+    // load question first
+    const question = await this.questionModel.findOne({
+      _id: id,
+      questionerId: user._id,
+    });
+
+    if (!question) {
+      throw new NotFoundException('Question not found');
+    }
+
+    //  remove related offers, solutionattempted, votes, comments and then delete question
+    this.offerModel.deleteMany({ questionId: id });
+    this.solutionAttemptedModel.deleteMany({ questionId: id });
+    this.voteModel.deleteMany({ questionId: id });
+    this.commentModel.deleteMany({ questionId: id });
+
+    if (question.video) this.mediaService.deleteMedia(question.video);
+    return await this.questionModel.deleteOne({ _id: id });
   }
 
   async searchQuestions(

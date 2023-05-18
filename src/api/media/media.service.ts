@@ -20,4 +20,15 @@ export class MediaService {
       .promise();
     return uploadResult;
   }
+
+  async deleteMedia(mediaUrl: string) {
+    const s3 = new S3();
+    const deleteResult = await s3
+      .deleteObject({
+        Bucket: this.configService.get('AWS_BUCKET'),
+        Key: mediaUrl,
+      })
+      .promise();
+    return deleteResult;
+  }
 }
