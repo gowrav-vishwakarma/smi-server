@@ -18,6 +18,7 @@ import { UserDocument } from '../schemas/user.schema';
 import { UsersService } from './users.service';
 import { MediaService } from '../media/media.service';
 import { GetUser } from 'src/auth/get-user.decorator';
+import { Express } from 'express';
 
 @Controller('users')
 @ApiTags('Users')
