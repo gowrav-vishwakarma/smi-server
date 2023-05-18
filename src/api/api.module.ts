@@ -62,7 +62,6 @@ import { AppModule } from 'src/app.module';
     SolutionAttemptService,
     TopicsService,
     MailerService,
-    WsGateway,
   ],
   exports: [UsersService, MongooseModule, MailerService],
 })

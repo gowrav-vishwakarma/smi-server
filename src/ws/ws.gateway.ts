@@ -53,19 +53,7 @@ export class WsGateway
       `WS Client connected username: ${client.handshake.auth.username}`,
       this.connectedClients[client.handshake.auth.username],
     );
-    // update user status online
-    // await this.userModel
-    //   .updateOne(
-    //     {
-    //       _id: new Types.ObjectId(client.handshake.auth.username),
-    //     },
-    //     {
-    //       onlineStatus: UserOnlineStatus.ONLINE,
-    //     },
-    //   )
-    //   .catch((err) => {
-    //     this.logger.error('Error while updating user status', err);
-    //   });
+
     client.emit('session', {
       username: client.handshake.auth.username,
     });

@@ -18,5 +18,6 @@ import { WsGateway } from './ws/ws.gateway';
   ],
   controllers: [AppController],
   providers: [AppService, WsGateway],
+  exports: [WsGateway],
 })
 export class AppModule {}
