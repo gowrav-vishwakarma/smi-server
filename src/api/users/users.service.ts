@@ -70,4 +70,15 @@ export class UsersService {
       }
     }
   }
+
+  async setOnlineStatus(status: string, user: UserDocument): Promise<any> {
+    return await this.userModel.updateOne(
+      {
+        _id: user._id,
+      },
+      {
+        onlineStatus: status,
+      },
+    );
+  }
 }

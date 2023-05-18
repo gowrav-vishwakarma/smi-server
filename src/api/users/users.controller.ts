@@ -17,6 +17,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { UserDocument } from '../schemas/user.schema';
 import { UsersService } from './users.service';
 import { MediaService } from '../media/media.service';
+import { GetUser } from 'src/auth/get-user.decorator';
 
 @Controller('users')
 @ApiTags('Users')
@@ -77,5 +78,15 @@ export class UsersController {
     }
 
     return this.usersService.updateUser(user);
+  }
+
+  @Get('set-online-status/:status')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  async setOnlineStatus(
+    @Param('status') status: string,
+    @GetUser() user: UserDocument,
+  ) {
+    return this.usersService.setOnlineStatus(status, user);
   }
 }

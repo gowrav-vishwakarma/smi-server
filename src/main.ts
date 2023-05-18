@@ -6,7 +6,7 @@ import { config } from 'aws-sdk';
 
 import mongoose from 'mongoose';
 import { ConfigService } from '@nestjs/config';
-mongoose.set('debug', true);
+// mongoose.set('debug', true);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

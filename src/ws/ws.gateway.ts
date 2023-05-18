@@ -41,49 +41,53 @@ export class WsGateway
 
   @WebSocketServer() server: Socket;
 
-  afterInit(server: any) {
+  afterInit(server: Socket) {
     this.logger.log('WS Initialized');
   }
 
   async handleConnection(@ConnectedSocket() client: Socket): Promise<void> {
     this.logger.log(`WS Client connected: ${client.id}`);
     client.join(client.handshake.auth.username);
-
     this.connectedClients.set(client.id, client);
-
     this.logger.log(
       `WS Client connected username: ${client.handshake.auth.username}`,
       this.connectedClients[client.handshake.auth.username],
     );
-
     // update user status online
-    await this.userModel.updateOne(
-      {
-        _id: new Types.ObjectId(client.handshake.auth.username),
-      },
-      {
-        onlineStatus: UserOnlineStatus.ONLINE,
-      },
-    );
-
+    // await this.userModel
+    //   .updateOne(
+    //     {
+    //       _id: new Types.ObjectId(client.handshake.auth.username),
+    //     },
+    //     {
+    //       onlineStatus: UserOnlineStatus.ONLINE,
+    //     },
+    //   )
+    //   .catch((err) => {
+    //     this.logger.error('Error while updating user status', err);
+    //   });
     client.emit('session', {
       username: client.handshake.auth.username,
     });
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     this.connectedClients.delete(client.id);
     // update user status offline
-    this.userModel.updateOne(
-      {
-        _id: new Types.ObjectId(client.handshake.auth.username),
-      },
-      {
-        onlineStatus: UserOnlineStatus.OFFLINE,
-      },
-    );
+    await this.userModel
+      .updateOne(
+        {
+          _id: new Types.ObjectId(client.handshake.auth.username),
+        },
+        {
+          onlineStatus: UserOnlineStatus.OFFLINE,
+        },
+      )
+      .catch((err) => {
+        this.logger.error('Error while updating user status', err);
+      });
 
-    console.log(
+    this.logger.log(
       'Client disconnected:',
       client.id,
       this.connectedClients.get(client.id),
@@ -100,7 +104,7 @@ export class WsGateway
     if (userIds) {
       return Array.from(this.connectedClients.values())
         .filter((client) => {
-          console.log(
+          this.logger.log(
             'checking for user ',
             client.handshake.auth.username,
             userIds.includes(client.handshake.auth.username),
@@ -129,7 +133,7 @@ export class WsGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: any,
   ): Promise<any> {
-    console.log('server Call Accepted', payload);
+    this.logger.log('server Call Accepted', payload);
     await this.solutionAttemptedModel.updateOne(
       {
         _id: payload.solutionOfferId,
@@ -253,7 +257,7 @@ export class WsGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: any,
   ): Promise<any> {
-    console.log('OfferPlaced', payload);
+    this.logger.log('OfferPlaced', payload);
     // todo check if user is online
     let onlineUser = this.getConnectedClientIdByUserId([payload.to]);
     if (onlineUser.length) {
