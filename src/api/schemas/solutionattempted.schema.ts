@@ -67,6 +67,9 @@ export class SolutionAttempted {
 
   @Prop({ required: false })
   ratingCommentForQuestioner: string;
+
+  // Virtual field
+  public questionTitle?: string;
 }
 
 export const SolutionAttemptedSchema =
