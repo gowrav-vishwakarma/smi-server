@@ -19,6 +19,7 @@ import { UsersService } from './users.service';
 import { MediaService } from '../media/media.service';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { Express } from 'express';
+import { JwtPayload } from '../../auth/dto/JwtPayload.dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -41,6 +42,16 @@ export class UsersController {
       password: 0,
       __v: 0,
     });
+    delete user.password;
+    delete user._id;
+    return user;
+  }
+
+  @Get('profile-by-token/:token')
+  async getProfileByToken(
+    @Param('token') token: string,
+  ): Promise<UserDocument> {
+    const user = await this.usersService.getUserByToken(token);
     delete user.password;
     delete user._id;
     return user;
@@ -88,5 +99,25 @@ export class UsersController {
     @GetUser() user: UserDocument,
   ) {
     return this.usersService.setOnlineStatus(status, user);
+  }
+
+  @Get('add-new-ask-me-token/:name')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  async addNewAskMeToken(
+    @GetUser() user: JwtPayload,
+    @Param('name') name: string,
+  ) {
+    return this.usersService.addNewAskMeToken(user, name);
+  }
+
+  @Get('remove-ask-me-token/:token')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  async removeAskMeToken(
+    @GetUser() user: JwtPayload,
+    @Param('token') token: string,
+  ) {
+    return this.usersService.removeAskMeToken(user, token);
   }
 }

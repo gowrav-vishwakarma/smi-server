@@ -1,5 +1,5 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema, SchemaTypes } from 'mongoose';
 
 import * as bcrypt from 'bcrypt';
 
@@ -82,7 +82,7 @@ class asFollowersType {
   totalFollowers: number;
 
   @Prop({ type: [], default: [] })
-  userFollowersIds: String[];
+  userFollowersIds: string[];
 }
 
 const asFollowersDefaults = {
@@ -96,7 +96,7 @@ class asFollowingType {
   totalFollowing: number;
 
   @Prop({ type: [], default: [] })
-  userFollowingIds: String[];
+  userFollowingIds: string[];
 }
 
 const asFollowingDefaults = {
@@ -281,7 +281,7 @@ export class User {
   experiences: experienceType[];
 
   @Prop({ type: [], default: [] })
-  skills: String[]; //as topic data
+  skills: string[]; //as topic data
 
   @Prop(raw({ type: socialProfileType, default: socialProfileDefaults }))
   socialProfile: Record<string, any>;
@@ -300,6 +300,9 @@ export class User {
 
   @Prop({ type: String })
   authToken: string;
+
+  @Prop({ type: SchemaTypes.Mixed, default: [] })
+  askMeTokens: Record<string, string>[];
 }
 
 // export const ExperienceType = SchemaFactory.createForClass(experienceType);

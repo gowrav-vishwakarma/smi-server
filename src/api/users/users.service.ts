@@ -4,9 +4,10 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { RegisterUserDTO } from '../../auth/dto/user-register.dto';
 import { User, UserDocument } from '../schemas/user.schema';
+import { JwtPayload } from '../../auth/dto/JwtPayload.dto';
 
 @Injectable()
 export class UsersService {
@@ -37,12 +38,18 @@ export class UsersService {
     return await this.userModel.findById(userId, excludeFields);
   }
 
+  async getUserByToken(token: string): Promise<UserDocument> {
+    return this.userModel
+      .findOne({ askMeTokens: { $elemMatch: { token } } }, { password: 0 })
+      .exec();
+  }
+
   async findUserByUsername(username: string): Promise<UserDocument> {
-    return await this.userModel.findOne({ username });
+    return this.userModel.findOne({ username });
   }
 
   async updateUser(updateUserDto: any): Promise<any> {
-    if (!updateUserDto.userId || updateUserDto.userId == undefined) return;
+    if (!updateUserDto.userId) return;
 
     try {
       if (updateUserDto.password) {
@@ -71,8 +78,35 @@ export class UsersService {
     }
   }
 
+  async addNewAskMeToken(user: JwtPayload, name: string): Promise<any> {
+    const loadedUser = await this.userModel.findById(user._id);
+    if (!loadedUser) {
+      throw new Error('User not found');
+    }
+
+    const askMeToken = new Types.ObjectId().toString();
+    loadedUser.askMeTokens = [
+      ...(loadedUser.askMeTokens ?? []),
+      { name, token: askMeToken },
+    ]; // Push new token into askMeTokens array
+    await loadedUser.save(); // Save the updated user document
+    return askMeToken;
+  }
+
+  async removeAskMeToken(user: JwtPayload, token: string): Promise<any> {
+    const loadedUser = await this.userModel.findById(user._id);
+    if (!loadedUser) {
+      throw new Error('User not found');
+    }
+
+    loadedUser.askMeTokens = loadedUser.askMeTokens.filter(
+      (t) => t.token !== token,
+    ); // Remove token from askMeTokens array
+    await loadedUser.save(); // Save the updated user document
+  }
+
   async setOnlineStatus(status: string, user: UserDocument): Promise<any> {
-    return await this.userModel.updateOne(
+    return this.userModel.updateOne(
       {
         _id: user._id,
       },
