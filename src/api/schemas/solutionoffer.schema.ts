@@ -52,7 +52,7 @@ export class SolutionOffer {
   notes: string;
 
   @Prop({ required: true })
-  solutionChannel: [];
+  solutionChannel: string[];
 
   @Prop({ required: true, default: false })
   isRead: boolean;
