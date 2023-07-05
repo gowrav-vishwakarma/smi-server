@@ -26,9 +26,8 @@ import { SolutionAttemptService } from './attempt.service';
 @Controller('solution-attempt')
 export class SolutionAttemptController {
   constructor(
-    private readonly solutionAttemptService: SolutionAttemptService,
-  ) // private readonly mailerService: MailerService,
-  {}
+    private readonly solutionAttemptService: SolutionAttemptService, // private readonly mailerService: MailerService,
+  ) {}
 
   @Post('create')
   @ApiTags('SolutionAttempt')
@@ -64,5 +63,13 @@ export class SolutionAttemptController {
   @UseGuards(AuthGuard())
   solutionAttempt(@Param('id') id: string) {
     return this.solutionAttemptService.detail(id);
+  }
+
+  @Get('by/:id')
+  @UsePipes(ValidationPipe)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  mySolutionAttempt(@Param('id') id: string) {
+    return this.solutionAttemptService.mySolutionAttempt(id);
   }
 }

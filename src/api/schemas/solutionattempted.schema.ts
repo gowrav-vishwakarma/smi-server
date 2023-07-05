@@ -68,6 +68,9 @@ export class SolutionAttempted {
   @Prop({ required: false })
   ratingCommentForQuestioner: string;
 
+  // Virtual field
+  public questionTitle?: string;
+
   @Prop({ type: mongoose.Schema.Types.ObjectId, required: true })
   offerId: string;
 }

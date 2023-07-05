@@ -1,6 +1,6 @@
 import { Body, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { CreateSolutionAttemptDTO } from '../dto/create-solution-attempt.dto';
 import { CreateSolutionRatingDTO } from '../dto/create-solution-rating.dto';
@@ -21,7 +21,6 @@ export class SolutionAttemptService {
   constructor(
     @InjectModel(SolutionAttempted.name)
     private readonly solutionAttemptedModel: Model<SolutionAttemptedDocument>,
-
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Question.name)
     private readonly questionModel: Model<QuestionDocument>,
@@ -100,7 +99,7 @@ export class SolutionAttemptService {
 
     await this.userModel.updateOne({ _id: ratingParams.offererId }, userUpdate);
 
-    return await this.solutionAttemptedModel.updateOne(
+    return this.solutionAttemptedModel.updateOne(
       {
         questionId: ratingParams.questionId,
         offererId: ratingParams.offererId,
@@ -109,6 +108,41 @@ export class SolutionAttemptService {
       },
       solutionUpdate,
     );
+  }
+
+  async mySolutionAttempt(id: string): Promise<SolutionAttemptedDocument[]> {
+    return this.solutionAttemptedModel
+      .aggregate([
+        {
+          $match: {
+            offererId: new Types.ObjectId(id) as any,
+          },
+        },
+        {
+          $lookup: {
+            from: 'questions', // Replace with the actual name of the Question collection
+            localField: 'questionId',
+            foreignField: '_id',
+            as: 'question',
+          },
+        },
+        {
+          $addFields: {
+            questionTitle: {
+              $arrayElemAt: ['$question.title', 0],
+            },
+          },
+        },
+        {
+          $sort: {
+            createdAt: -1, // Sort by 'createdAt' field in descending order (latest first)
+          },
+        },
+        {
+          $limit: 20, // Limit the result to 20 documents
+        },
+      ])
+      .exec();
   }
 
   async detail(id: string): Promise<SolutionAttemptedDocument> {
