@@ -67,8 +67,8 @@ export class SolutionAttemptController {
 
   @Get('by/:id')
   @UsePipes(ValidationPipe)
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard())
   mySolutionAttempt(@Param('id') id: string) {
     return this.solutionAttemptService.mySolutionAttempt(id);
   }
