@@ -74,10 +74,9 @@ export class UsersController {
           }`,
         );
 
-        user[file.originalname] = mediaRes['key'];
+        user[file.originalname] = mediaRes['Key'];
       }
     }
-
     return this.usersService.updateUser(user);
   }
 
