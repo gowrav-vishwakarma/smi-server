@@ -26,6 +26,11 @@ import {
   UserOnlineStatus,
 } from '../api/schemas/user.schema';
 
+import {
+  SolutionOffer,
+  SolutionOfferDocument,
+} from '../api/schemas/solutionoffer.schema';
+
 @WebSocketGateway({ cors: true })
 export class WsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -34,6 +39,8 @@ export class WsGateway
     @InjectModel(SolutionAttempted.name)
     private readonly solutionAttemptedModel: Model<SolutionAttemptedDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(SolutionOffer.name)
+    private readonly solutionOfferModel: Model<SolutionOfferDocument>,
   ) {}
 
   private logger: Logger = new Logger('WsGateway');
@@ -110,11 +117,12 @@ export class WsGateway
   // }
 
   @SubscribeMessage('initiateCall')
-  handleInitiateCall(
+  async handleInitiateCall(
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: any,
-  ): void {
+  ): Promise<any> {
     this.server.to(payload.to).emit('ringing', payload);
+    await this.solutionOfferModel.updateOne({_id: payload.offerId}, {$inc: {'offerValue.totalAttemptedCount': 1}});
   }
 
   @SubscribeMessage('acceptCall')
@@ -122,16 +130,21 @@ export class WsGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: any,
   ): Promise<any> {
+    console.log('server Call Accepted', payload);
     this.logger.log('server Call Accepted', payload);
     await this.solutionAttemptedModel.updateOne(
       {
-        _id: payload.solutionOfferId,
+        _id: payload.solutionOfferAttemptId,
       },
       {
         status: 'ACCEPTED',
       },
     );
-
+    await this.solutionOfferModel.updateOne(
+      { _id: payload.offerId },
+      { $inc: { 'offerValue.totalAcceptedCount': 1 } },
+    );
+    console.log("solutionOfferModel == ",payload);
     // update user status
     await this.userModel.updateMany(
       {
@@ -165,11 +178,15 @@ export class WsGateway
   }
 
   @SubscribeMessage('denyCall')
-  handleDenyCall(
+  async handleDenyCall(
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: any,
-  ): void {
+  ): Promise<any> {
     this.server.to(payload.to).emit('callDenied', payload);
+    await this.solutionOfferModel.updateOne(
+        {_id: payload.offerId},
+        {$inc: {'offerValue.totalRejectedCount': 1}}
+    );
   }
 
   // @SubscribeMessage('RtcOffer')

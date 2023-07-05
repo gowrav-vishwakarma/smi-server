@@ -35,4 +35,7 @@ export class CreateSolutionAttemptDTO {
 
   @ApiProperty()
   notes: string;
+
+  @ApiProperty()
+  offerId: string;
 }

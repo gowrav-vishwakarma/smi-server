@@ -67,6 +67,9 @@ export class SolutionAttempted {
 
   @Prop({ required: false })
   ratingCommentForQuestioner: string;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true })
+  offerId: string;
 }
 
 export const SolutionAttemptedSchema =
