@@ -9,4 +9,7 @@ export class CreateCommentDTO {
   @IsString()
   @ApiProperty({ default: 'Comment here' })
   comment: string;
+
+  @ApiProperty({ default: null })
+  video: string | null;
 }

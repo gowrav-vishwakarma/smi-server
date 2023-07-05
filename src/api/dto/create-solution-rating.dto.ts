@@ -31,4 +31,10 @@ export class CreateSolutionRatingDTO {
 
   @ApiProperty()
   markedSolved: boolean;
+
+  @ApiProperty()
+  solutionVideoBlob: Blob | null;
+
+  @ApiProperty()
+  videoText: string | null;
 }

@@ -48,6 +48,9 @@ export class Comment {
 
   // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   // commenter: User;
+
+  @Prop({ required: false })
+  video: string;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
