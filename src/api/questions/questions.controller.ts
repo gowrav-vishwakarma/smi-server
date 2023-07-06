@@ -45,6 +45,7 @@ export class QuestionsController {
     @GetUser() user: UserDocument,
     @Body() filterOptions: GetQuestionsDTO,
   ): QuestionDocument[] | any {
+    console.log('filterOptions', filterOptions);
     return this.questionsService.searchQuestions(filterOptions, user);
   }
 
