@@ -22,6 +22,7 @@ import { UserDocument } from '../schemas/user.schema';
 import { SolutionAttemptService } from './attempt.service';
 import { MediaService } from '../media/media.service';
 import { CommentsService } from '../comments/comments.service';
+import { Express } from 'express';
 
 // import { MailerService } from '../email/email.service';
 @Controller('solution-attempt')
