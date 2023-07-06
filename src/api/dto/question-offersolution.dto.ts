@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsMongoId,
   IsNumber,
@@ -16,6 +17,10 @@ export class QuestionOfferSolutionDTO {
   @IsMongoId()
   @ApiProperty()
   questionId: string;
+
+  @IsString()
+  @ApiProperty()
+  questionTitle: string;
 
   @IsString()
   @ApiProperty({
@@ -37,5 +42,10 @@ export class QuestionOfferSolutionDTO {
     type: String,
     default: '',
   })
-  offererId?: string;
+  offererId: string;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty({ type: Boolean, default: false })
+  isQuestionSolved: boolean;
 }

@@ -51,6 +51,9 @@ export class Comment {
 
   @Prop({ required: false })
   video: string;
+
+  @Prop({ required: true, default: false })
+  isQuestionSolved: boolean;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

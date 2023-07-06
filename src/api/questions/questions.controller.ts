@@ -134,9 +134,11 @@ export class QuestionsController {
         {
           questionerId: user._id,
           questionId: createdQuestion._id,
+          questionTitle: createdQuestion.title,
           offererId: askTo,
           notes: 'My default offer',
           solutionChannel: [],
+          isQuestionSolved: false,
         },
         user,
       );

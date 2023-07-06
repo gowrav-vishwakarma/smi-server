@@ -14,6 +14,10 @@ export class CreateSolutionRatingDTO {
   @ApiProperty()
   offererId: string;
 
+  @IsMongoId()
+  @ApiProperty()
+  offerId: string;
+
   @ApiProperty()
   rating: number;
 

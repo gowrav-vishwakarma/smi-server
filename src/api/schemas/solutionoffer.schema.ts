@@ -39,6 +39,8 @@ export class SolutionOffer {
   })
   questionId: string;
 
+  @Prop({ required: true })
+  questionTitle: string;
   // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Question' })
   // question: Question;
 
@@ -56,6 +58,9 @@ export class SolutionOffer {
 
   @Prop({ required: true, default: false })
   isRead: boolean;
+
+  @Prop({ required: true, default: false })
+  isQuestionSolved: boolean;
 
   @Prop({ required: true, default: Date.now() })
   createdAt: Date;

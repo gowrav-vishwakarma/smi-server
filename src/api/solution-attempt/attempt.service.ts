@@ -16,6 +16,11 @@ import {
   QuestionStatus,
 } from '../schemas/question.schema';
 
+import {
+  SolutionOffer,
+  SolutionOfferDocument,
+} from '../schemas/solutionoffer.schema';
+
 @Injectable()
 export class SolutionAttemptService {
   constructor(
@@ -24,6 +29,8 @@ export class SolutionAttemptService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Question.name)
     private readonly questionModel: Model<QuestionDocument>,
+    @InjectModel(SolutionOffer.name)
+    private readonly SolutionOfferModel: Model<SolutionOfferDocument>,
   ) {}
 
   async createAttempt(
@@ -40,6 +47,7 @@ export class SolutionAttemptService {
         questioner: solutionAttemp.questioner,
         offerer: solutionAttemp.offerer,
         notes: solutionAttemp.notes,
+        offerId: solutionAttemp.offerId,
       },
       { upsert: true },
     );
@@ -98,6 +106,13 @@ export class SolutionAttemptService {
     }
 
     await this.userModel.updateOne({ _id: ratingParams.offererId }, userUpdate);
+
+    if (ratingParams.offerId) {
+      await this.SolutionOfferModel.updateOne(
+        { _id: ratingParams.offerId },
+        { isQuestionSolved: true },
+      );
+    }
 
     return this.solutionAttemptedModel.updateOne(
       {
