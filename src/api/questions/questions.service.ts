@@ -77,7 +77,15 @@ export class QuestionsService {
   ): Promise<QuestionDocument[] | any> {
     const { page = 1, sort = false } = filterOptions;
     const matchCondition = {};
-    const sortStage = { $sort: { createdAt: -1 } };
+    const sortStage = { $sort: { score: -1, createdAt: -1 } };
+
+    if (filterOptions.query) {
+      matchCondition['$text'] = {
+        $search: filterOptions.query,
+        $caseSensitive: false,
+        $diacriticSensitive: false,
+      };
+    }
 
     // for global product
     if (!filterMyQuestionsOnly) {
@@ -87,14 +95,6 @@ export class QuestionsService {
 
     if (filterMyQuestionsOnly && showOnlyOpen)
       matchCondition['status'] = 'OPEN';
-
-    if (filterOptions.query) {
-      const searchRegex = new RegExp('.*' + filterOptions.query + '.*', 'i');
-
-      matchCondition['title'] = {
-        $regex: searchRegex,
-      };
-    }
 
     if (filterOptions.topics && filterOptions.topics.length > 0) {
       let topicChunks = filterOptions.topics.map((topic) => {
@@ -135,8 +135,14 @@ export class QuestionsService {
     }
 
     const pipeline = [];
-    pipeline.push(sortStage);
     pipeline.push({ $match: matchCondition });
+
+    if (filterOptions.query) {
+      pipeline.push(sortStage);
+    } else {
+      pipeline.push(sortStage, { $limit: 20 }); // Get the top 20 questions when no query is provided
+    }
+
     if (user) {
       // Include my vode
       pipeline.push({
