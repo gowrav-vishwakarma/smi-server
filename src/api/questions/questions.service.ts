@@ -72,8 +72,8 @@ export class QuestionsService {
   async searchQuestions(
     filterOptions: GetQuestionsDTO,
     user?: any,
-    filterMyQuestionsOnly: boolean = false,
-    showOnlyOpen: boolean = false,
+    filterMyQuestionsOnly = false,
+    showOnlyOpen = false,
   ): Promise<QuestionDocument[] | any> {
     const { page = 1, sort = false } = filterOptions;
     const matchCondition = {};
@@ -90,7 +90,7 @@ export class QuestionsService {
     // for global product
     if (!filterMyQuestionsOnly) {
       matchCondition['scope'] = 'Public';
-      matchCondition['status'] = 'OPEN';
+      // matchCondition['status'] = 'OPEN';
     }
 
     if (filterMyQuestionsOnly && showOnlyOpen)
