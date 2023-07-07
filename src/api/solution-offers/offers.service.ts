@@ -56,12 +56,12 @@ export class OffersService {
     user: UserDocument,
   ): Promise<any> {
     if (countOnly) {
-      return await this.solutionOfferModel.countDocuments({
+      return this.solutionOfferModel.countDocuments({
         questionerId: user._id,
         isRead: showReadOffers,
       });
     } else {
-      return await this.solutionOfferModel
+      return this.solutionOfferModel
         .find({
           questionerId: user._id,
           isRead: showReadOffers,
