@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsMongoId, IsString } from 'class-validator';
+import { IsBoolean, IsMongoId, IsOptional, IsString } from 'class-validator';
 
 export class CreateCommentDTO {
   @IsMongoId()
@@ -14,6 +14,7 @@ export class CreateCommentDTO {
   video: string | null;
 
   @IsBoolean()
+  @IsOptional()
   @ApiProperty({ default: false })
   isQuestionSolved: boolean;
 }
