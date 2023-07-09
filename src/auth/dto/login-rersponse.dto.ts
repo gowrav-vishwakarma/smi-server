@@ -10,6 +10,7 @@ export class LoginResponseDTO {
     // userTags: string[];
     userLanguages: string[];
     onlineStatus: string | null;
+    profileImage: string | null;
   };
 
   @ApiProperty()

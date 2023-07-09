@@ -49,6 +49,7 @@ export class AuthService {
         userToppics: user.topicsInterestedIn,
         userLanguages: user.languagesSpeaks,
         onlineStatus: user.onlineStatus,
+        profileImage: user.profileImage,
       },
       accessToken,
     };
@@ -97,6 +98,7 @@ export class AuthService {
         userToppics: user.topicsInterestedIn,
         userLanguages: user.languagesSpeaks,
         onlineStatus: user.onlineStatus,
+        profileImage: user.profileImage,
       },
       accessToken,
     };
@@ -130,6 +132,7 @@ export class AuthService {
         userToppics: user.topicsInterestedIn,
         userLanguages: user.languagesSpeaks,
         onlineStatus: user.onlineStatus,
+        profileImage: user.profileImage,
       },
       accessToken,
     };
