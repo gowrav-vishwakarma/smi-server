@@ -130,7 +130,7 @@ export class QuestionsController {
     }
 
     if (askTo) {
-      this.questionsService.offerSolution(
+      await this.questionsService.offerSolution(
         {
           questionerId: user._id,
           questionId: createdQuestion._id,
@@ -142,7 +142,7 @@ export class QuestionsController {
         },
         user,
       );
-      this.wsGateway.questionAskedTo(askTo, {
+      await this.wsGateway.questionAskedTo(askTo, {
         name: user.name,
         title: createdQuestion.title,
         topic: createdQuestion.topic.join(','),

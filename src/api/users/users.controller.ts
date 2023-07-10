@@ -53,7 +53,6 @@ export class UsersController {
   ): Promise<UserDocument> {
     const user = await this.usersService.getUserByToken(token);
     delete user.password;
-    delete user._id;
     return user;
   }
 
