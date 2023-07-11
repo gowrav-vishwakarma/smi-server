@@ -91,18 +91,21 @@ export class SolutionAttemptService {
         },
       };
 
-      await this.questionModel.updateOne(
-        { _id: ratingParams.questionId },
-        {
-          status: QuestionStatus.SOLVED,
-        },
-      );
-
       solutionUpdate = {
         ratingForQuestioner: ratingParams.rating,
         ratingCommentForQuestioner: ratingParams.comment,
-        status: SolutionAttemptedStatus.SOLVED,
       };
+
+      if (ratingParams.markedSolved) {
+        await this.questionModel.updateOne(
+          { _id: ratingParams.questionId },
+          {
+            status: QuestionStatus.SOLVED,
+          },
+        );
+
+        solutionUpdate['status'] = SolutionAttemptedStatus.SOLVED;
+      }
     }
 
     await this.userModel.updateOne({ _id: ratingParams.offererId }, userUpdate);
