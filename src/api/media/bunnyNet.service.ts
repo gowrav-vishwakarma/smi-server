@@ -6,15 +6,15 @@ import { CreateVideoDTO, UploadVideoDTO } from '../dto/bunnyNet-video.dto';
 export class BunnyNetService {
   private axiosInstance: AxiosInstance;
   private defaultLibraryID: string | undefined =
-    process.env.VUE_APP_BUNNY_NET_VIDEO_LIBRARY_ID ?? '';
+    process.env.BUNNY_NET_VIDEO_LIBRARY_ID ?? '';
   constructor() {
     this.axiosInstance = axios.create({
-      baseURL: process.env.VUE_APP_BUNNY_NET_SERVER_URL,
+      baseURL: process.env.BUNNY_NET_SERVER_URL,
       headers: {
         // "Content-Type": "multipart/form-data",
         accept: 'application/json',
         'content-type': 'application/*+json',
-        AccessKey: process.env.VUE_APP_BUNNY_NET_ACCESS_KEY ?? '',
+        AccessKey: process.env.BUNNY_NET_ACCESS_KEY ?? '',
       },
     });
   }
@@ -45,7 +45,7 @@ export class BunnyNetService {
         method: 'PUT',
         headers: {
           'Content-Type': 'text/plain',
-          AccessKey: process.env.VUE_APP_BUNNY_NET_ACCESS_KEY ?? '',
+          AccessKey: process.env.BUNNY_NET_ACCESS_KEY ?? '',
         },
       })
       .then((res) => {
