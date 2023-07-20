@@ -21,6 +21,8 @@ import { GetQuestionsDTO } from '../dto/question-filter-query.dto';
 import { QuestionOfferSolutionDTO } from '../dto/question-offersolution.dto';
 import { VoteQuestionDTO } from '../dto/vote-question.dto';
 import { MediaService } from '../media/media.service';
+import { BunnyNetService } from '../media/bunnyNet.service';
+
 import { QuestionDocument, QuestionStatus } from '../schemas/question.schema';
 import { UserDocument } from '../schemas/user.schema';
 import { QuestionsService } from './questions.service';
@@ -35,6 +37,7 @@ export class QuestionsController {
     private readonly questionsService: QuestionsService,
     private readonly mediaService: MediaService,
     private readonly wsGateway: WsGateway,
+    private readonly bunnyNetService: BunnyNetService,
   ) {}
 
   @Post()
@@ -118,15 +121,27 @@ export class QuestionsController {
     );
 
     if (video) {
-      const mediaRes = await this.mediaService.createMedia(
-        video,
-        `nest-question/${createdQuestion._id}/video.webm`,
+      // const mediaRes = await this.mediaService.createMedia(
+      //   video,
+      //   `nest-question/${createdQuestion._id}/video.webm`,
+      // );
+
+      const mediaRes = await this.bunnyNetService.uploadVideo(
+        {
+          title: createdQuestion.title,
+        },
+        {
+          videoId: null,
+          enabledResolutions: '720',
+        },
+        video.buffer,
       );
+
       await this.questionsService.updateVideoURL(
         createdQuestion._id,
-        `nest-question/${createdQuestion._id}/video.webm`,
+        mediaRes['videoPath'],
       );
-      createdQuestion.video = mediaRes.Location;
+      createdQuestion.video = mediaRes['videoPath'];
     }
 
     if (askTo) {

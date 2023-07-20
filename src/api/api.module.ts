@@ -25,6 +25,7 @@ import { TopicsController } from './topic/topics.controller';
 import { TopicsService } from './topic/topics.service';
 import { MailerController } from './email/email.controller';
 import { MailerService } from './email/email.service';
+import { BunnyNetService } from './media/bunnyNet.service';
 import { WsGateway } from 'src/ws/ws.gateway';
 import { AppModule } from 'src/app.module';
 
@@ -62,6 +63,7 @@ import { AppModule } from 'src/app.module';
     SolutionAttemptService,
     TopicsService,
     MailerService,
+    BunnyNetService,
   ],
   exports: [UsersService, MongooseModule, MailerService],
 })
