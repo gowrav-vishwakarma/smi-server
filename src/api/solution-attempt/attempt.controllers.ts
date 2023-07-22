@@ -69,7 +69,7 @@ export class SolutionAttemptController {
           questionId: Rating.questionId,
           comment: Rating.videoText,
           video: mediaRes['key'],
-          isQuestionSolved: Rating.markedSolved,
+          isQuestionSolved: Rating.markedSolved == 'true',
         },
         user,
       );
