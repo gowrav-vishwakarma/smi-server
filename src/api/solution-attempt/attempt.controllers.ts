@@ -23,6 +23,7 @@ import { SolutionAttemptService } from './attempt.service';
 import { MediaService } from '../media/media.service';
 import { CommentsService } from '../comments/comments.service';
 import { Express } from 'express';
+import { BunnyNetService } from '../media/bunnyNet.service';
 
 // import { MailerService } from '../email/email.service';
 @Controller('solution-attempt')
@@ -31,6 +32,7 @@ export class SolutionAttemptController {
     private readonly solutionAttemptService: SolutionAttemptService, // private readonly mailerService: MailerService,
     private readonly mediaService: MediaService,
     private readonly CommentsService: CommentsService,
+    private readonly bunnyNetService: BunnyNetService,
   ) {}
 
   @Post('create')
@@ -59,22 +61,43 @@ export class SolutionAttemptController {
   ): Promise<SolutionAttemptedDocument> {
     // Promise<SolutionAttemptedDocument> {
     // console.log(res);
+
+    let commentVideo: string | null = null;
     if (solutionVideoBlob) {
-      const mediaRes = await this.mediaService.createMedia(
-        solutionVideoBlob,
-        `questions/${Rating.questionId}/comments/${Rating.solutionAttemptId}_video.webm`,
+      const mediaRes = await this.bunnyNetService.uploadVideo(
+        {
+          title: `questions/${Rating.questionId}/comments/${Rating.solutionAttemptId}_video`,
+        },
+        {
+          videoId: null,
+          enabledResolutions: '720',
+        },
+        solutionVideoBlob.buffer,
       );
+
+      commentVideo = mediaRes['videoPath'];
+
+      // const mediaRes = await this.mediaService.createMedia(
+      //   solutionVideoBlob,
+      //   `questions/${Rating.questionId}/comments/${Rating.solutionAttemptId}_video.webm`,
+      // );
+      // commentVideo = mediaRes['key'];
+    }
+
+    if (Rating.videoText) {
       await this.CommentsService.createComment(
         {
           questionId: Rating.questionId,
           comment: Rating.videoText,
-          video: mediaRes['key'],
-          isQuestionSolved: Rating.markedSolved == 'true',
+          video: commentVideo,
+          isQuestionSolved:
+            Rating.markedSolved === 'true' || Rating.markedSolved === true,
         },
         user,
       );
     }
 
+    Rating.markedSolved = JSON.parse(Rating.markedSolved);
     return await this.solutionAttemptService.createRating(Rating);
   }
 
