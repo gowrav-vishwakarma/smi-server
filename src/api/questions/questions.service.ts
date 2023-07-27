@@ -10,7 +10,6 @@ import { Comment } from '../schemas/comment.schema';
 import {
   Question,
   QuestionDocument,
-  QuestionScope,
   QuestionStatus,
 } from '../schemas/question.schema';
 import {
@@ -24,6 +23,7 @@ import {
   SolutionAttemptedDocument,
 } from '../schemas/solutionattempted.schema';
 import { MediaService } from '../media/media.service';
+import { BunnyNetService } from '../media/bunnyNet.service';
 const ObjectId = require('mongoose').Types.ObjectId;
 
 @Injectable()
@@ -41,6 +41,7 @@ export class QuestionsService {
     private readonly commentModel: Model<Comment>,
 
     private readonly mediaService: MediaService,
+    private readonly bunnyNetService: BunnyNetService,
   ) {}
 
   async createQuestion(question: CreateQuestionDTO): Promise<QuestionDocument> {
@@ -63,10 +64,21 @@ export class QuestionsService {
     this.offerModel.deleteMany({ questionId: id });
     this.solutionAttemptedModel.deleteMany({ questionId: id });
     this.voteModel.deleteMany({ questionId: id });
+
+    const commentList = await this.commentModel
+      .find({ video: { $exists: true, $ne: null }, questionId: id })
+      .exec();
+    for (const comment of commentList) {
+      await this.bunnyNetService.deleteVideo(comment.video.split('/')[1]);
+    }
     this.commentModel.deleteMany({ questionId: id });
 
-    if (question.video) this.mediaService.deleteMedia(question.video);
-    return await this.questionModel.deleteOne({ _id: id });
+    if (question.video) {
+      // aws upload removed
+      // this.mediaService.deleteMedia(question.video);
+      await this.bunnyNetService.deleteVideo(question.video.split('/')[1]);
+    }
+    return this.questionModel.deleteOne({ _id: id });
   }
 
   async searchQuestions(

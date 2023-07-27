@@ -19,7 +19,6 @@ export class BunnyNetService {
     });
   }
   async createVideo(params: CreateVideoDTO): Promise<any> {
-    console.log(params);
     return await this.axiosInstance.request({
       method: 'POST',
       url: '/library/' + this.defaultLibraryID + '/videos',
@@ -57,5 +56,12 @@ export class BunnyNetService {
       .catch(() => {
         // console.log(err.message());
       });
+  }
+
+  async deleteVideo(videoId: string): Promise<any> {
+    return await this.axiosInstance.request({
+      method: 'DELETE',
+      url: '/library/' + this.defaultLibraryID + '/videos/' + videoId,
+    });
   }
 }
