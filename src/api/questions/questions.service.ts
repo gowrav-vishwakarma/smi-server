@@ -65,9 +65,10 @@ export class QuestionsService {
     this.solutionAttemptedModel.deleteMany({ questionId: id });
     this.voteModel.deleteMany({ questionId: id });
 
-    const commentList = await this.commentModel
-      .find({ video: { $exists: true, $ne: null }, questionId: id })
-      .exec();
+    const commentList = await this.commentModel.find({
+      video: { $exists: true, $ne: null },
+      questionId: id,
+    });
     for (const comment of commentList) {
       await this.bunnyNetService.deleteVideo(comment.video.split('/')[1]);
     }

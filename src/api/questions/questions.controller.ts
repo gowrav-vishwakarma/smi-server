@@ -175,7 +175,7 @@ export class QuestionsController {
   async deleteQuestion(
     @GetUser() user: UserDocument,
     @Param('questionId') questionId: string,
-  ) {
+  ): Promise<any> {
     return this.questionsService.deleteQuestion(questionId, user);
   }
 
